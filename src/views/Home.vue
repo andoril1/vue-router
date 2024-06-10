@@ -1,45 +1,41 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="card card-shadow card-body bg-yellow-gradient">
-                    <h5> Welcome to Flazzard Mining Pool</h5>
-                    <p>We offer some of the lowest fees on the market in our ever evolving pool.<br>We also aim to be able to payout every 10 minutes to our miners! <br>Please have some patience with us as we are just starting out, the pool will offer more features very soon.</p>
-                </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-shadow card-body bg-yellow-gradient">
+                <h5> Welcome to Flazzard Mining Pool</h5>
+                <p>We offer some of the lowest fees on the market in our ever evolving pool.<br>We also aim to be able to payout every 10 minutes to our miners! <br>Please have some patience with us as we are just starting out, the pool will offer more features very soon.</p>
             </div>
         </div>
-        <br>
-        <div class="row">
-            <div class="col-12">
-                <div class="card card-shadow card-body bg-yellow-gradient">
-                    <h1>Choose Payment Scheme:</h1>
-                    <button class="btn btn-info btn-fill btn-sm" @click="soloPressed()">{{ schemeButtonText }}</button>
-                    <br>
-                </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <h1>Choose Payment Scheme:</h1>
+            <button class="btn btn-info btn-fill btn-sm" @click="soloPressed()">{{ schemeButtonText }}</button>
+            <br>
+        </div>    
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12" v-for="pool in selectedScheme" :key="pool.id">
+            <div class="info-box bg-yellow-gradient">
+                <span class="info-box-text">
+                    <img class="coinimg" :src="`./src/assets/img/coin/icon/${pool.coin.symbol.toLowerCase()}.png`" style="height: 25px; width: 25px;">
+                    {{paymentScheme(pool.coin.name,pool.paymentProcessing.payoutScheme)}}<br>Ticker:{{ pool.coin.symbol }}
+                <br>Algo: {{ pool.coin.algorithm }}<br>Pool Fee: {{pool.poolFeePercent}}%
+                <br>PaymentScheme: {{ pool.paymentProcessing.payoutScheme }}<br>Minimum Pay: {{ pool.paymentProcessing.minimumPayment }}
+                <br>Miners: {{ pool.poolStats.connectedMiners }}<br>Pool Hash: {{ formatHashrate(pool.poolStats.poolHashrate,2,"H/s") }}
+                <br>Dominance : {{ formatHashrate(pool.poolStats.poolHashrate / pool.networkStats.networkHashrate,5,"%") }}<br>
+                Net Hash: {{ formatHashrate(pool.networkStats.networkHashrate, 2, "H/s") }}<br>
+                Difficulty: {{ formatHashrate(pool.networkStats.networkDifficulty, 2,"") }}<br>
+                BlockHeight: {{ pool.networkStats.blockHeight }}<br>
+                Last Block:  <span v-html="renderTimeAgoBox(pool.lastPoolBlockTime)"></span>
+                <router-link :to="{ name: 'Connect', params: { id: pool.id } }">
+                    <button class="btn btn-info btn-fill btn-sm">Let's Mine {{ pool.coin.name }}!</button>
+                </router-link>
+                </span>
             </div>
         </div>
-        <br>
-        <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12" v-for="pool in selectedScheme" :key="pool.id">
-                <div class="info-box bg-yellow-gradient">
-                        <span class="info-box-text">
-                            <img class="coinimg" :src="`./src/assets/img/coin/icon/${pool.coin.symbol.toLowerCase()}.png`" style="height: 25px; width: 25px;">
-                            {{paymentScheme(pool.coin.name,pool.paymentProcessing.payoutScheme)}}<br>Ticker:{{ pool.coin.symbol }}
-                        <br>Algo: {{ pool.coin.algorithm }}<br>Pool Fee: {{pool.poolFeePercent}}%
-                        <br>PaymentScheme: {{ pool.paymentProcessing.payoutScheme }}<br>Minimum Pay: {{ pool.paymentProcessing.minimumPayment }}
-                        <br>Miners: {{ pool.poolStats.connectedMiners }}<br>Pool Hash: {{ formatHashrate(pool.poolStats.poolHashrate,2,"H/s") }}
-                        <br>Dominance : {{ formatHashrate(pool.poolStats.poolHashrate / pool.networkStats.networkHashrate,5,"%") }}<br>
-                        Net Hash: {{ formatHashrate(pool.networkStats.networkHashrate, 2, "H/s") }}<br>
-                        Difficulty: {{ formatHashrate(pool.networkStats.networkDifficulty, 2,"") }}<br>
-                        BlockHeight: {{ pool.networkStats.blockHeight }}<br>
-                        Last Block:  <span v-html="renderTimeAgoBox(pool.lastPoolBlockTime)"></span>
-                        <router-link :to="{ name: 'Connect', params: { id: pool.id } }">
-                            <button class="btn btn-info btn-fill btn-sm">Let's Mine {{ pool.coin.name }}!</button>
-                        </router-link>
-                        </span>
-                    </div>
-                </div>
-            </div>
     </div>
 </template>
 <script>
