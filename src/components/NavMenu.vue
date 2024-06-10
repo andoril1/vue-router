@@ -24,9 +24,7 @@
         </router-link> |
         <router-link :to="{ name: 'Support', params: { id: ($route.params.id) } }">
           <button class="btn btn-info btn-fill btn-sm">Support</button>
-        </router-link>
-        {{ $route.params.id }} 
-        
+        </router-link>        
     </div>  
 </template>
 <script>
