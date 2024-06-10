@@ -46,7 +46,7 @@ import {useRoute} from 'vue-router'
             .then((response) => {
                 //console.log(response.data.pools)
                 pools.value =response.data.pools
-                console.log(response.data.pools)
+                //console.log(response.data.pools)
             })
             .catch((error) => {
                 console.log(error)

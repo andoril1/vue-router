@@ -11,6 +11,7 @@ import navMenu from '@/components/NavMenu.vue';
 export default{
   components: {navMenu}
 }
+
 </script>
 
 <style>
