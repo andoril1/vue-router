@@ -1,6 +1,6 @@
 <template>
   <navMenu/>
-  <div id ="container">
+  <div id ="container" style="min-height: 864px; height: auto; min-width: 800px;">
       <router-view></router-view>
   </div>
 

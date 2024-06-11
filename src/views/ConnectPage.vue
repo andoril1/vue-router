@@ -23,6 +23,7 @@
                         <br>
                         <h5>EU: stratum+tcp://pool.flazzard.com:{{ id }} startDiff: {{ value.difficulty }} / VarDiff: {{ value.varDiff.minDiff }} &harr; &infin; [{{ value.name }}]</h5>
                         <hr>
+                        {{ getBlocks(pool.id) }}
                         </div>
                     </span>
                 </div>
@@ -38,6 +39,7 @@ import {useRoute} from 'vue-router'
     setup(){
         
         const pools = ref([]);
+        const blocks = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
         function getPools() {
@@ -53,13 +55,28 @@ import {useRoute} from 'vue-router'
             })
             
         }
+        function getBlocks(coin) {
+            axios
+            .get('https://pool.flazzard.com/api/pools' + '/' + coin + '/blocks')
+            .then((response) => {
+                //console.log(response.data.pools)
+                blocks.value =response.data
+                console.log(response.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            
+        }
         const filterCoin = computed(function() {
                 //show if PPLNS - Button is pressed
                 return pools.value.filter((pool) => pool.id==id.value)
         });
         return{
           getPools,
+          getBlocks,
           pools,
+          blocks,
           filterCoin,
           id
         }
@@ -68,6 +85,7 @@ import {useRoute} from 'vue-router'
     },
     mounted() {
         this.getPools();
+        this.getBlocks();
     },
   
   }

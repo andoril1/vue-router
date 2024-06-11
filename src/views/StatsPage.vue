@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12" v-for="pool in filterCoin" :key="pool.id">
+    <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
         <div class="info-box bg-yellow-gradient">
                 <span class="info-box-text">
                     <h3>Block Stats</h3>
@@ -9,7 +9,7 @@
                     <br>{{ pool.networkStats.blockHeight }}</h6>
                     <hr>
                     <h6>Pending Blocks:
-                    <br>Needs Work</h6>
+                    <br>{{ getBlocks(pool.id) }}</h6>
                     <hr>
                     <h6>Confirmed Blocks: 
                     <br>{{ pool.totalBlocks }}</h6>
@@ -23,9 +23,10 @@
                 </span>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12" v-for="pool in filterCoin" :key="pool.id">
+        <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
           <div class="info-box bg-yellow-gradient">
             <span class="info-box-text">
+                    
                     <h3>Payment Stats</h3>
                     <hr>
                     <h6>Payment Threshold:
@@ -58,25 +59,48 @@
   import axios from 'axios'
   import {ref,computed} from 'vue'
   import {useRoute} from 'vue-router'
+import { resolveTypeElements } from 'vue/compiler-sfc';
     export default {
       setup(){
           
           const pools = ref([]);
+          const blocks = ref(["hello"]);
           const route = useRoute();
           const id = ref(route.params.id);
+          const pending = ref(0);
           function getPools() {
               axios
               .get('https://pool.flazzard.com/api/pools')
               .then((response) => {
                   //console.log(response.data.pools)
                   pools.value =response.data.pools
-                  console.log(response.data.pools)
+                  //console.log(response.data.pools)
               })
               .catch((error) => {
                   console.log(error)
               })
               
           }
+          function getBlocks() {
+            axios
+            .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
+            .then((response) => {
+                //console.log(response.data.pools)
+                blocks.value =response.data
+                //console.log(response.data)
+
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            
+        }
+          const pendingBlock = computed(function(block) {
+                if(block.status == 'pending') {
+                  pending++
+                }
+                else return pending = 0;
+          });
           const filterCoin = computed(function() {
                   //show if PPLNS - Button is pressed
                   return pools.value.filter((pool) => pool.id==id.value)
@@ -107,15 +131,20 @@
           return{
             getPools,
             pools,
+            blocks,
+            pending,
+            pendingBlock,
             filterCoin,
             id,
-            formatHashrate
+            formatHashrate,
+            getBlocks
           }
           
   
       },
       mounted() {
           this.getPools();
+          this.getBlocks();
       },
     
     }
