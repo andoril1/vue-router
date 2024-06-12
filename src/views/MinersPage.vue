@@ -7,9 +7,9 @@
                     <hr>
                     <table>
                         <tr>
-                            <td id="left">Miner Adress:</td>
-                            <td id="center">Hashrate</td>
-                            <td id="right">Shares Per Second</td>
+                            <th id="left">Miner Adress:</th>
+                            <th id="center">Hashrate</th>
+                            <th id="right">Shares Per Second</th>
                         </tr>
                         <tr v-for="(value,id) in pool.topMiners" :key="id">
                             <td style="white-space: nowrap">[{{value.miner.substring(0, 8)}}...{{ value.miner.substring(value.miner.length - 8) }}]</td>

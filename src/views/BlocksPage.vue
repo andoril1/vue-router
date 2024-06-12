@@ -8,20 +8,20 @@
                         <hr>
                         <table>
                         <tr>
-                            <td id="time">Time:</td>
-                            <td id="one">| Miner Adress:</td>
-                            <td id="two">| BlockHeight |</td>
-                            <td id="three">Network-Diff |</td>
-                            <td id="four">Block Reward |</td>
-                            <td id="five">Block Status |</td>
+                            <th id="time">[Time]</th>
+                            <th id="one">[Mining Adress]</th>
+                            <th id="two">[Height]</th>
+                            <th id="three">[Net-Diff]</th>
+                            <th id="four">[Reward]</th>
+                            <th id="five">[Block Status]</th>
                         </tr>
                         <tr v-for="block in blocks" :key="block.id">
-                            <td style="white-space: nowrap"><span v-html="renderTimeAgoBox(block.created)"></span></td>
-                            <td style="white-space: nowrap">[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]</td>
-                            <td style="width:90%">{{ block.blockHeight }}</td>
-                            <td style="white-space: nowrap">{{ formatHashrate(block.networkDifficulty,1, "") }}</td>
-                            <td style="white-space: nowrap">{{ block.reward }}</td>
-                            <td style="white-space: nowrap">{{ block.status }}</td>
+                            <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
+                            <td style="padding-right: 10px;">[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]</td>
+                            <td style="padding-right: 10px;">{{ block.blockHeight }}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(block.networkDifficulty,1, "") }}</td>
+                            <td style="padding-right: 10px;">{{ block.reward }}</td>
+                            <td style="padding-right: 10px;">{{ block.status }}</td>
                             
                         </tr>
                     </table>
