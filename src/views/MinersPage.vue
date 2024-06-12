@@ -1,22 +1,22 @@
 <template>
-    <div class="row">
-    <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12" v-for="pool in filterCoin" :key="pool.id">
+    <div class="row d-flex justify-content-center">
+    <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
         <div class="info-box bg-yellow-gradient">
                 <span class="info-box-text">
                     <h3>Our Top Miners for {{ pool.coin.name }}[{{ pool.coin.symbol }}]</h3>
                     <hr>
-                    <div class="row" v-for="(value,id) in pool.topMiners" :key="id">
-                      <div class="column">
-                      <br>{{ value.miner }}
-                      </div>
-                      <div class="column">
-                      <br>{{ formatHashrate(value.hashrate,2,"H/s") }}
-                      </div>
-                      <div class="column">
-                      <br>{{ formatHashrate(value.sharesPerSecond,2,"") }}
-                      <hr>
-                      </div>
-                    </div>
+                    <table>
+                        <tr>
+                            <td id="left">Miner Adress:</td>
+                            <td id="center">Hashrate</td>
+                            <td id="right">Shares Per Second</td>
+                        </tr>
+                        <tr v-for="(value,id) in pool.topMiners" :key="id">
+                            <td style="white-space: nowrap">[{{value.miner.substring(0, 8)}}...{{ value.miner.substring(value.miner.length - 8) }}]</td>
+                            <td style="width:90%">{{ formatHashrate(value.hashrate,2,"H/s") }}</td>
+                            <td style="white-space: nowrap">{{ formatHashrate(value.sharesPerSecond,2,"") }}</td>
+                        </tr>
+                    </table>
                 </span>
             </div>
         </div>

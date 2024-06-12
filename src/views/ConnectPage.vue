@@ -1,6 +1,7 @@
 <template>
+    <div class="container">
       <div class="row">
-        <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12" v-for="pool in filterCoin" :key="pool.id">
+        <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
             <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
                         <h2>Connect your miner for {{ pool.coin.name }}</h2>
@@ -29,6 +30,7 @@
                 </div>
             </div>
       </div>
+    </div>
   </template>
   
   <script>

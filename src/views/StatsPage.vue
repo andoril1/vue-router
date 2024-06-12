@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row justify-content-center">
     <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
         <div class="info-box bg-yellow-gradient">
                 <span class="info-box-text">
@@ -8,15 +8,24 @@
                     <h6>BlockChain Height: 
                     <br>{{ pool.networkStats.blockHeight }}</h6>
                     <hr>
+                    <div v-for="block in filterPending" :key="block.id">
                     <h6>Pending Blocks:
-                    <br>{{ getBlocks(pool.id) }}</h6>
+                    <br>{{ filterPending.length }}</h6>
                     <hr>
+                    </div>
+                    <h6 v-if="!block">
+                    Pending Blocks:
+                    <br>0
+                    <hr>
+                    </h6>
                     <h6>Confirmed Blocks: 
                     <br>{{ pool.totalBlocks }}</h6>
                     <hr>
+                    <div v-for="block in filterCreated" :key="block.id">
                     <h6>Block Reward: 
-                    <br>Needs work</h6>
+                    <br>{{ block.reward }}</h6>
                     <hr>
+                    </div>
                     <h6>Block Value: 
                     <br>Needs work</h6>
                     <hr>
@@ -59,7 +68,6 @@
   import axios from 'axios'
   import {ref,computed} from 'vue'
   import {useRoute} from 'vue-router'
-import { resolveTypeElements } from 'vue/compiler-sfc';
     export default {
       setup(){
           
@@ -105,6 +113,14 @@ import { resolveTypeElements } from 'vue/compiler-sfc';
                   //show if PPLNS - Button is pressed
                   return pools.value.filter((pool) => pool.id==id.value)
           });
+          const filterCreated = computed(function() {
+                  //show if PPLNS - Button is pressed
+                  return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
+          });
+          const filterPending = computed(function() {
+                  //show if PPLNS - Button is pressed
+                  return blocks.value.filter((block) => block.status=='pending')
+          });
           function formatHashrate(value, decimal, unit) {
         if (value === 0) {
             return "0 " + unit;
@@ -135,6 +151,8 @@ import { resolveTypeElements } from 'vue/compiler-sfc';
             pending,
             pendingBlock,
             filterCoin,
+            filterCreated,
+            filterPending,
             id,
             formatHashrate,
             getBlocks
