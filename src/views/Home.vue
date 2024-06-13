@@ -18,6 +18,7 @@
     <div class="row d-flex justify-content-center">
         <div class="col-auto" v-for="pool in selectedScheme" :key="pool.id">
             <div class="info-box bg-yellow-gradient">
+                <router-link :to="{ name: 'Connect', params: { id: pool.id } }" style="text-decoration: none; color: azure;"> 
                 <span class="info-box-text">
                     <img class="coinimg" :src="`./src/assets/img/coin/icon/${pool.coin.symbol.toLowerCase()}.png`" style="height: 25px; width: 25px;">
                     {{paymentScheme(pool.coin.name,pool.paymentProcessing.payoutScheme)}}<br>Ticker:{{ pool.coin.symbol }}
@@ -33,6 +34,7 @@
                     <button class="btn btn-info btn-fill btn-sm">Let's Mine {{ pool.coin.name }}!</button>
                 </router-link>
                 </span>
+                </router-link>
             </div>
         </div>
     </div>

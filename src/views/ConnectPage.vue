@@ -1,31 +1,54 @@
 <template>
     <div class="container">
-      <div class="row">
+      <div class="row justify-content-center">
         <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
             <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
-                        <h2>Connect your miner for {{ pool.coin.name }}</h2>
+                        <h4>Connect your miner for {{ pool.coin.name }}</h4>
                         <hr>
-                        <h5>Coin Name: {{ pool.coin.name }}</h5>
+                        <table style="margin: auto;">
+                        <tr>
+                            <th id="time">[Coin]</th>
+                            <th id="one">[Algo]</th>
+                            <th id="two" v-if="pool.coin.website">[Website]</th>
+                            <th id="three" v-if="pool.coin.github">[Github]</th>
+                            <th id="four">[Payout Scheme]</th>
+                            <th id="five">[Pool Fee]</th>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 10px;">{{ pool.coin.name }}</td>
+                            <td style="padding-right: 10px;">{{ pool.coin.algorithm }}</td>
+                            <td style="padding-right: 10px;" v-if="pool.coin.website">{{ pool.coin.website }}</td>
+                            <td style="padding-right: 10px;" v-if="pool.coin.github">{{ pool.coin.github }}</td>
+                            <td style="padding-right: 10px;">{{ pool.paymentProcessing.payoutScheme }}</td>
+                            <td style="padding-right: 10px;">{{pool.poolFeePercent}}%</td>
+                            
+                        </tr>
+                    </table>
                         <hr>
-                        <h5>Algorithm: {{ pool.coin.algorithm }}</h5>
-                        <hr>
-                        <h5 v-if="pool.coin.website">Website: {{ pool.coin.website }}</h5>
-                        <hr>
-                        <h5 v-if="pool.coin.github">Github: {{ pool.coin.github }}<hr></h5>
-                        <h5>Payout Scheme: {{ pool.paymentProcessing.payoutScheme }}</h5>
-                        <hr>
-                        <h5>Minimum Threshold: {{ pool.paymentProcessing.minimumPayment }}</h5>
-                        <hr>
-                        <h5>Pool Fee: {{pool.poolFeePercent}}%</h5>
-                        <hr>
-                        <div v-for="(value, id) in pool.ports" :key="id">
-                        <h5>NA: stratum+tcp://na.flazzard.com:{{ id }} startDiff: {{ value.difficulty }} / VarDiff: {{ value.varDiff.minDiff }} &harr; &infin; [{{ value.name }}]</h5>
-                        <br>
-                        <h5>EU: stratum+tcp://pool.flazzard.com:{{ id }} startDiff: {{ value.difficulty }} / VarDiff: {{ value.varDiff.minDiff }} &harr; &infin; [{{ value.name }}]</h5>
-                        <hr>
-                        {{ getBlocks(pool.id) }}
-                        </div>
+                        <table style="margin: auto;">
+                            
+                        <tr>
+                            <th id="time">[EU]</th>
+                            <th id="time">[Description]</th>
+                            <th id="time">[NA]</th>
+                        </tr>
+                        <tr v-for="(value, id) in pool.ports" :key="id">
+                           
+                            <td style="padding-right: 10px;">
+                                <h6><button @click="copyMe('stratum+tcp://eu.flazzard.com:', id)" style="background-color: transparent; padding: 0px">
+                                <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button>
+                                stratum+tcp://eu.flazzard.com:{{ id }}</h6><hr>
+                            </td>
+                            <td style="padding-right: 10px;">[{{ value.name }}]<br>[Var Diff]<br>{{ value.varDiff.minDiff }} &harr; &infin;<hr></td>
+                            <td style="padding-right: 10px;">
+                                <h6>stratum+tcp://na.flazzard.com:{{ id }}
+                                <button @click="copyMe('stratum+tcp://na.flazzard.com:', id)" style="background-color: transparent; padding: 0px;">
+                                <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button></h6><hr>
+                            </td>
+                            
+                        </tr>
+                    </table>
                     </span>
                 </div>
             </div>
@@ -57,9 +80,12 @@ import {useRoute} from 'vue-router'
             })
             
         }
-        function getBlocks(coin) {
+        function copyMe(address,port){
+          navigator.clipboard.writeText(address + port);
+        }
+        function getBlocks(coin, section, wallet) {
             axios
-            .get('https://pool.flazzard.com/api/pools' + '/' + coin + '/blocks')
+            .get('https://pool.flazzard.com/api/pools' + '/' + coin + '/' + section + '/' + wallet)
             .then((response) => {
                 //console.log(response.data.pools)
                 blocks.value =response.data
@@ -80,7 +106,8 @@ import {useRoute} from 'vue-router'
           pools,
           blocks,
           filterCoin,
-          id
+          id,
+          copyMe
         }
         
 

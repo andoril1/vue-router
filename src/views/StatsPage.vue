@@ -8,16 +8,9 @@
                     <h6>BlockChain Height: 
                     <br>{{ pool.networkStats.blockHeight }}</h6>
                     <hr>
-                    <div v-for="block in filterPending" :key="block.id">
                     <h6>Pending Blocks:
                     <br>{{ filterPending.length }}</h6>
                     <hr>
-                    </div>
-                    <h6 v-if="!block">
-                    Pending Blocks:
-                    <br>0
-                    <hr>
-                    </h6>
                     <h6>Confirmed Blocks: 
                     <br>{{ pool.totalBlocks }}</h6>
                     <hr>
@@ -62,13 +55,18 @@
             </div>
         </div>
   </div>
+  <BarChart />
 </template>
   
   <script>
   import axios from 'axios'
   import {ref,computed} from 'vue'
   import {useRoute} from 'vue-router'
+  import BarChart from '@/components/BarChart.vue'
     export default {
+      components:{
+        BarChart
+      },
       setup(){
           
           const pools = ref([]);
