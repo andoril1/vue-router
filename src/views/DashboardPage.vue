@@ -7,11 +7,11 @@
                       <h2>Your Dashboard - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h2>
                       <hr>
                       <h3>Please input WalletAddress to load stats</h3>
-                      <input v-model="walletAddress" type="input" style="width: 300px"><input type="submit" @click="buttonPressed=true">
-                      <div v-if="buttonPressed">
+                      <input v-model="walletAddress" type="input" style="width: 300px"><input type="submit" @click="checkWallet(pool.id)">
+                      <div v-if="blocks">
                         hello
-                        <div v-for="block in getBlocks(pool.id, 'miners', walletAddress)" :key="block.id">
-                            {{ block }}
+                        <div v-for="(value,id) in blocks" :key="id">
+                            {{ value }}
                         </div>
                       </div>
                       <!--
@@ -65,14 +65,18 @@ import {useRoute} from 'vue-router'
             .then((response) => {
                 //console.log(response.data.pools)
                 blocks.value =response.data
-                console.log(response.data)
+                console.log('https://pool.flazzard.com/api/pools' + '/' + coin + '/' + section + '/' + wallet)
             })
             .catch((error) => {
                 console.log(error)
-            })
-          
+            })       
             
             
+        }
+        function checkWallet(pool) {
+          alert('Wallet Loaded!')
+          console.log(walletAddress)
+          getBlocks(pool, 'miners', walletAddress.value)
         }
         const filterCoin = computed(function() {
                 //show if PPLNS - Button is pressed
@@ -170,7 +174,8 @@ import {useRoute} from 'vue-router'
           getTimeAgoAdmin,
           renderTimeAgoBox,
           walletAddress,
-          buttonPressed
+          buttonPressed,
+          checkWallet
         }
         
 

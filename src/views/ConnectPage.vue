@@ -114,7 +114,7 @@ import {useRoute} from 'vue-router'
     },
     mounted() {
         this.getPools();
-        this.getBlocks();
+        //this.getBlocks();
     },
   
   }
