@@ -4,6 +4,9 @@
       :options="chartOptions"
       :data="chartData"
     />
+    <div v-for="stat in stats" :key="stat.id">labels:{{ stat.created }} ||| pool hashrate data:{{ stat.poolHashrate}} ||| miners: {{ stat.connectedMiners }}|||
+      network hashrate: {{ stat.networkHashrate }} ||| network diff: {{ stat.networkDifficulty }}
+    </div>
   </template>
   
   <script>

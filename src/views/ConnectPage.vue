@@ -51,6 +51,43 @@
                     </table>
                     </span>
                 </div>
+                <div class="info-box bg-yellow-gradient">
+                    <span class="info-box-text">
+                        <h3>Miner Configuration</h3>
+                        <h2>Getting started</h2>
+                        <hr />
+                            To get started mining and use this pool you need the following
+                            <ul>
+                                <li>{{ pool.coin.name }} Wallet address</li>
+                                <li>crypto mining software that supports the {{ pool.coin.name }} coin and algorithm {{ pool.coin.algorithm }}</li>
+                                <li>hardware to run it on. This can be you home PC, mining rig, ASIC miner or cloud mining</li>
+                            </ul>
+                            <br>
+                            <h4>{{ pool.coin.name }} Wallet address</h4>
+                            A wallet address is needed to payout you shares mined at this pool server.<br>
+                            When the total mined value is past the payout threshold, we will send your coin to this wallet address.<br>
+                            <br>
+                            <br>
+                            <h4>crypto mining software</h4>
+                            To mine at this pool you can use any miner supporting the {{ pool.coin.algorithm }} algorithm or {{ pool.coin.name }} coin.<br>
+                            Use an search engine and search for "{{ pool.coin.name }} miner software".
+                            download the miner software and configure your crypto miner.<br>
+                            <p>Where:</p>
+              <ul>
+			    <li>POOL STRATUM ADDRESS AND PORT - one off the stratum addresses above in the Pool Configuration section depending on the difficuty you want</li>
+                <li>YOUR_WALLET_ADDRESS - your valid {{ pool.coin.name }} wallet address</li>
+				<li>WORKERNAME - an optional workername can be used to identify the miner or RIG</li>
+				<li>PASSWORD - use x or leave it blank</li>
+				<br>
+				Optional:
+				<li>STATIC DIFFICULTY - to mine with a static (fixed) difficulty 
+				    simply use&nbsp;<code>d=xxx</code>&nbsp;as password in your
+					miner configuration where&nbsp;<code>xxx</code>&nbsp;denotes your
+					preferred difficulty.
+				</li>
+			  </ul>
+                    </span>
+                </div>
             </div>
       </div>
     </div>

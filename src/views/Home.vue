@@ -30,9 +30,6 @@
                 Difficulty: {{ formatHashrate(pool.networkStats.networkDifficulty, 2,"") }}<br>
                 BlockHeight: {{ pool.networkStats.blockHeight }}<br>
                 Last Block:  <span v-html="renderTimeAgoBox(pool.lastPoolBlockTime)"></span>
-                <router-link :to="{ name: 'Connect', params: { id: pool.id } }">
-                    <button class="btn btn-info btn-fill btn-sm">Let's Mine {{ pool.coin.name }}!</button>
-                </router-link>
                 </span>
                 </router-link>
             </div>

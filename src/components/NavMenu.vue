@@ -21,8 +21,8 @@
           <router-link :to="{ name: 'Connect', params: { id: ($route.params.id) } }">
             <button class="btn btn-info btn-fill btn-sm">Connect</button>
           </router-link> |
-          <router-link :to="{ name: 'About', params: { id: ($route.params.id) } }">
-            <button class="btn btn-info btn-fill btn-sm">About</button>
+          <router-link :to="{ name: 'FAQ', params: { id: ($route.params.id) } }">
+            <button class="btn btn-info btn-fill btn-sm">FAQ</button>
           </router-link> |
           <router-link :to="{ name: 'Support', params: { id: ($route.params.id) } }">
             <button class="btn btn-info btn-fill btn-sm">Support</button>

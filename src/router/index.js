@@ -3,7 +3,7 @@ import Home from '@/views/Home.vue'
 
 const routes = [
     {path: '/', name: 'Home', component: Home},
-    {path: '/:id?/about', name: 'About', component: ()=>import('@/views/About.vue'), props: true},
+    {path: '/:id?/FAQ', name: 'FAQ', component: ()=>import('@/views/FAQ.vue'), props: true},
     {path: '/:id?/stats', name: 'Stats', component: ()=>import('@/views/StatsPage.vue'), props: true},
     {path: '/:id?/dashboard', name: 'Dashboard', component: ()=>import('@/views/DashboardPage.vue'), props: true},
     {path: '/:id?/blocks', name: 'Blocks', component: ()=>import('@/views/BlocksPage.vue'), props: true},
