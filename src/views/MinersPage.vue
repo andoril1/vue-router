@@ -12,10 +12,11 @@
                             <th id="right">Shares Per Second</th>
                         </tr>
                         <tr v-for="(value,id) in pool.topMiners" :key="id">
-                            <td style="white-space: nowrap">[{{value.miner.substring(0, 8)}}...{{ value.miner.substring(value.miner.length - 8) }}]</td>
+                            <td style="padding-right: 10px;"><a :href="pool.addressInfoLink.replace(pool.address, value.miner)" target="_blank">[{{value.miner.substring(0, 8)}}...{{ value.miner.substring(value.miner.length - 8) }}]</a></td>
                             <td style="width:90%">{{ formatHashrate(value.hashrate,2,"H/s") }}</td>
-                            <td style="white-space: nowrap">{{ formatHashrate(value.sharesPerSecond,2,"") }}</td>
-                        </tr>
+                            <td style="white-space: nowrap">{{ formatHashrate(value.sharesPerSecond,2,"") }} {{ pool.coin.explorer }}</td>
+                          
+                          </tr>
                     </table>
                 </span>
             </div>

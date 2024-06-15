@@ -18,8 +18,8 @@
                         <tr>
                             <td style="padding-right: 10px;">{{ pool.coin.name }}</td>
                             <td style="padding-right: 10px;">{{ pool.coin.algorithm }}</td>
-                            <td style="padding-right: 10px;" v-if="pool.coin.website">{{ pool.coin.website }}</td>
-                            <td style="padding-right: 10px;" v-if="pool.coin.github">{{ pool.coin.github }}</td>
+                            <td style="padding-right: 10px;" v-if="pool.coin.website"><a :href="pool.coin.website">{{ pool.coin.website }}</a></td>
+                            <td style="padding-right: 10px;" v-if="pool.coin.github"><a :href="pool.coin.github">{{ pool.coin.github }}</a></td>
                             <td style="padding-right: 10px;">{{ pool.paymentProcessing.payoutScheme }}</td>
                             <td style="padding-right: 10px;">{{pool.poolFeePercent}}%</td>
                             

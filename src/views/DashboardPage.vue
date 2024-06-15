@@ -7,12 +7,25 @@
                       <h2>Your Dashboard - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h2>
                       <hr>
                       <h3>Please input WalletAddress to load stats</h3>
-                      <input v-model="walletAddress" type="input" style="width: 300px"><input type="submit" @click="checkWallet(pool.id)">
+                      <input v-model="walletAddress" type="input" style="width: 300px" id="walletAddress"><input type="submit" @click="checkWallet(pool.id)" autocomplete="on">
                       <div v-if="blocks">
-                        hello
-                        <div v-for="(value,id) in blocks" :key="id">
-                            {{ value }}
-                        </div>
+                        <table style="margin: auto;">
+                        <tr>
+                            <th id="time" style="padding-right: 10px;">[Pending Shares]</th>
+                            <th id="time" style="padding-right: 10px;">[Pending Balance]</th>
+                            <th id="time" style="padding-right: 10px;">[Payout Today]</th>
+                            <th id="time" style="padding-right: 10px;">[Lifetime Balance]</th>
+                            <th id="time" style="padding-right: 10px;">[Last Payment]</th>
+                        </tr>
+                        <tr>
+                            <td style="padding-right: 10px;">{{ formatHashrate(blocks.pendingShares,2,"") }}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(blocks.pendingBalance,2,"") }}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(blocks.todayPaid,2,"") }}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(blocks.totalPaid,2,"") }}</td>
+                            <td style="padding-right: 10px;"><a :href="blocks.lastPaymentLink" style="text-decoration: none;" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><span v-html="renderTimeAgoBox(blocks.lastPayment)"></span></td>
+                        </tr>
+                    </table>
+                        
                       </div>
                       <!--
                       <table style="margin: auto;" v-if="buttonPressed">
@@ -40,12 +53,12 @@ import {useRoute} from 'vue-router'
     setup(){
         
         const pools = ref([]);
-        const blocks = ref(["hello"]);
+        const blocks = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
         const pending = ref(0);
         const buttonPressed =ref(false)
-        const walletAddress =ref("pugdag:qp2ae8a5c2jsflu2gvd65smmkttuycpac52xxfgyfwkt540xqc2wv0fmqhu4z"); 
+        const walletAddress =ref(""); 
         function getPools() {
             axios
             .get('https://pool.flazzard.com/api/pools')
@@ -65,7 +78,6 @@ import {useRoute} from 'vue-router'
             .then((response) => {
                 //console.log(response.data.pools)
                 blocks.value =response.data
-                console.log('https://pool.flazzard.com/api/pools' + '/' + coin + '/' + section + '/' + wallet)
             })
             .catch((error) => {
                 console.log(error)
@@ -75,7 +87,6 @@ import {useRoute} from 'vue-router'
         }
         function checkWallet(pool) {
           alert('Wallet Loaded!')
-          console.log(walletAddress)
           getBlocks(pool, 'miners', walletAddress.value)
         }
         const filterCoin = computed(function() {

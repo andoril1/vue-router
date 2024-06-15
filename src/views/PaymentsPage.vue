@@ -15,9 +15,9 @@
                       </tr>
                       <tr v-for="block in blocks" :key="block.id">
                           <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
-                          <td style="padding-right: 10px;">[{{block.address.substring(0, 8)}}...{{ block.address.substring(block.address.length - 8) }}]</td>
+                          <td style="padding-right: 10px;"><a :href="block.addressInfoLink" target="_blank">[{{block.address.substring(0, 8)}}...{{ block.address.substring(block.address.length - 8) }}]</a></td>
                           <td style="padding-right: 10px;">{{ formatHashrate(block.amount,2,pool.coin.symbol) }}</td>
-                          <td style="padding-right: 10px;">{{ block.transactionConfirmationData.substring(0, 8)}}...{{block.transactionConfirmationData.substring(block.transactionConfirmationData.length - 8) }}]</td>
+                          <td style="padding-right: 10px;"><a :href="block.transactionInfoLink" target="_blank">{{ block.transactionConfirmationData.substring(0, 8)}}...{{block.transactionConfirmationData.substring(block.transactionConfirmationData.length - 8) }}]</a></td>
                       </tr>
                   </table>
                   
