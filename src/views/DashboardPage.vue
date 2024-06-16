@@ -27,17 +27,6 @@
                     </table>
                         
                       </div>
-                      <!--
-                      <table style="margin: auto;" v-if="buttonPressed">
-                        <tr v-for="block in getBlocks(pool.id,'miners',walletAddress)" :key="block.id">
-                            <th id="time">[Coin]</th>
-                        </tr>
-                        <tr>
-                            <td>my block</td>
-                            
-                        </tr>
-                    </table>
-                    -->
                   </span>
               </div>
           </div>

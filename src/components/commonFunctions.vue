@@ -1,51 +1,20 @@
 <template>
-    <div class="row d-flex justify-content-center">
-        <div class="col-auto">
-            <div class="card card-shadow card-body bg-yellow-gradient">
-                <h5> Welcome to Flazzard Mining Pool</h5>
-                <p>We offer some of the lowest fees on the market in our ever evolving pool.<br>We also aim to be able to payout every 10 minutes to our miners! <br>Please have some patience with us as we are just starting out, the pool will offer more features very soon.</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row d-flex justify-content-center">
-        <div class="col-auto d-flex justify-content-center">
-            <button class="btn btn-info btn-fill btn-sm" @click="soloPressed()">{{ schemeButtonText }}</button>
-            <br>
-        </div>    
-    </div>
-
-    <div class="row d-flex justify-content-center">
-        <div class="col-auto" v-for="pool in selectedScheme" :key="pool.id">
-            <div class="info-box bg-yellow-gradient">
-                <router-link :to="{ name: 'Connect', params: { id: pool.id } }" style="text-decoration: none; color: azure;"> 
-                <span class="info-box-text">
-                    <img class="coinimg" :src="`./src/assets/img/coin/icon/${pool.coin.symbol.toLowerCase()}.png`" style="height: 25px; width: 25px;">
-                    {{paymentScheme(pool.coin.name,pool.paymentProcessing.payoutScheme)}}<br>Ticker:{{ pool.coin.symbol }}
-                <br>Algo: {{ pool.coin.algorithm }}<br>Pool Fee: {{pool.poolFeePercent}}%
-                <br>PaymentScheme: {{ pool.paymentProcessing.payoutScheme }}<br>Minimum Pay: {{ pool.paymentProcessing.minimumPayment }}
-                <br>Miners: {{ pool.poolStats.connectedMiners }}<br>Pool Hash: {{ formatHashrate(pool.poolStats.poolHashrate,2,"H/s") }}
-                <br>Dominance : {{ formatHashrate(pool.poolStats.poolHashrate / pool.networkStats.networkHashrate,5,"%") }}<br>
-                Net Hash: {{ formatHashrate(pool.networkStats.networkHashrate, 2, "H/s") }}<br>
-                Difficulty: {{ formatHashrate(pool.networkStats.networkDifficulty, 2,"") }}<br>
-                BlockHeight: {{ pool.networkStats.blockHeight }}<br>
-                Last Block:  <span v-html="renderTimeAgoBox(pool.lastPoolBlockTime)"></span>
-                </span>
-                </router-link>
-            </div>
-        </div>
-    </div>
+  
 </template>
-<script>
+
 import axios from "axios"
-import {ref, computed, watch} from 'vue'
+import {ref, computed, watch,} from 'vue'
+import {defineExpose} from 'vue';
 export default {
-    'name': "PoolList",
     setup() {
         const pools = ref([]);
         const showPplns = ref(false);
         const showSolo = ref(false);
         const schemeButtonText = ref("SOLO");
+
+        defineExpose({
+            formatHashrate
+        });
 
         const selectedScheme = computed(function() {
             if(!showSolo.value) {
@@ -59,14 +28,12 @@ export default {
                 return pools.value.filter((pool) => pool.paymentProcessing.payoutScheme)
             }
         });
-        /*
         watch(pools,(newValue,oldValue) => { 
             if(newValue != oldValue) {
                 setInterval(() => {
                     getPools()
                 }, 60000);
         }});
-        */
         function soloPressed() {
             showSolo.value = !showSolo.value
             if(showSolo.value){
@@ -178,11 +145,9 @@ export default {
             soloPressed,
             schemeButtonText
         }
-    },
-    mounted() {
-        this.getPools();
-    },
-}
-</script>
+    }
+
+
 <style>
+
 </style>
