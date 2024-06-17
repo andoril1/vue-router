@@ -10,11 +10,14 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "ag-charts-vue3": "^9.3.1",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
+    "echarts": "^5.5.0",
     "vue": "^3.4.21",
-    "vue-chartjs": "^5.3.1"
+    "vue-chartjs": "^5.3.1",
+    "vue-echarts": "^6.7.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

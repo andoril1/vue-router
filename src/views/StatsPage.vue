@@ -41,17 +41,17 @@
                     </div>
         </div>
   </div>
-  <BarChart />
+  <agChart />
 </template>
   
   <script>
   import axios from 'axios'
   import {ref,computed, watch} from 'vue'
   import {useRoute} from 'vue-router'
-  import BarChart from '@/components/BarChart.vue'
+  import agChart from '@/components/eChart.vue'
     export default {
       components:{
-        BarChart
+        agChart
       },
       setup(){
           
@@ -71,7 +71,7 @@
               .catch((error) => {
                   console.log(error)
               })
-          
+          /*
           watch(pools,(newValue,oldValue) => { 
               if(newValue != oldValue) {
                   setInterval(() => {
@@ -79,7 +79,7 @@
                   }, 60000);
                   clearInterval()
           }});
-          /*
+          
           watch(blocks,(newValue,oldValue) => { 
               if(newValue != oldValue) {
                   setInterval(() => {
