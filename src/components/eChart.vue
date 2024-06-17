@@ -1,5 +1,5 @@
 <template>
-    <v-chart class="chart" :option="option" autoresize />
+    <v-chart class="chart" v-if="chart_loaded" :option="option" autoresize />
   </template>
   
   <script setup>
@@ -26,7 +26,7 @@
   ]);
   
   provide(THEME_KEY, 'dark');
-  
+  let chart_loaded = ref(true)
   const option = ref({
     title: {
       text: '',
@@ -50,7 +50,7 @@
       {
         name: 'Hashrate',
         type: 'line',
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        data: [820, 932, 901, 934, 1290, 1330, 2000],
         smooth: true,
       },
       {
@@ -65,47 +65,54 @@
       console.log(chartData)
       
     function applyStatsToChart(stats) {
-        var tempChartData = {
-        labels: [],
-        datasets: [
-            {
-                label: 'Pool Hashrate',
-                backgroundColor: '#8A6158',
-                data: []
-            },
-            {
-                label: 'Miners',
-                backgroundColor: '#66E03C',
-                data: []
-            },
-            {
-                label: 'Network Hashrate',
-                backgroundColor: '#f87979',
-                data: []
-            },
-            {
-                label: 'Network Difficulty',
-                backgroundColor: '#3C5AE0',
-                data: []
-            },
-            {
-                label: 'Valid Shares',
-                backgroundColor: '#3C5AE0',
-                data: []
-            },
-        ]
+        var tempOption = {
+          legend: {
+            data: ['Pool Hashrate', 'Miners', 'Net Hashrate', 'Net Difficulty']
+          },
+          xAxis: {
+            data: []
+          },
+          series: [
+          {
+            name: 'Pool Hashrate',
+            type: 'line',
+            data: [],
+            smooth: true,
+          },
+          {
+            name: 'Miners',
+            type: 'line',
+            data: [],
+            smooth: true,
+          },
+          {
+            name: 'Net Hashrate',
+            type: 'line',
+            data: [],
+            smooth: true,
+          },
+          {
+            name: 'Net Difficulty',
+            type: 'line',
+            data: [],
+            smooth: true,
+          },
+        ],
+        
     }
 
     stats.forEach((singleStatObj, index)=>{
-        tempChartData.labels[index] = singleStatObj.created  // Format the date here
-        tempChartData.datasets[0].data[index] = singleStatObj.poolHashrate
-        tempChartData.datasets[1].data[index] = singleStatObj.connectedMiners
-        tempChartData.datasets[2].data[index] = singleStatObj.networkHashrate
-        tempChartData.datasets[3].data[index] = singleStatObj.networkDifficulty
-        tempChartData.datasets[4].data[index] = singleStatObj.validSharesPerSecond
+        tempOption.xAxis.data[index] = singleStatObj.created  // Format the date here
+        tempOption.series[0].data[index] = singleStatObj.poolHashrate
+        tempOption.series[1].data[index] = singleStatObj.connectedMiners
+        tempOption.series[2].data[index] = singleStatObj.networkHashrate
+        tempOption.series[3].data[index] = singleStatObj.networkDifficulty
+        tempOption.series[4].data[index] = singleStatObj.validSharesPerSecond
      })
 
-    chartData.value = tempChartData
+    option.value = tempOption
+    chart_loaded = true
+    console.log(chart_loaded)
     }
       
       function getStats() {
