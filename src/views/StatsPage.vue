@@ -40,8 +40,9 @@
                     </table>
                     </div>
         </div>
+        <agChart />
   </div>
-  <agChart />
+
 </template>
   
   <script>
