@@ -4,6 +4,7 @@
   
   <script setup>
   import { use } from 'echarts/core';
+  import {useRoute} from 'vue-router'
   import { CanvasRenderer } from 'echarts/renderers';
   import { LineChart } from 'echarts/charts';
   import {
@@ -28,7 +29,9 @@
   ]);
   
   provide(THEME_KEY, 'dark');
-  const colors = ['#5470C6', '#91CC75', '#EE6666'];
+  const route = useRoute();
+  const id = ref(route.params.id);
+  const colors = ['#3C5AE0', '#F95B11', '#31F911', '#F911F2'];
   const option = ref({
     title: {
       text: '',
@@ -46,7 +49,8 @@
     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     },
     yAxis: {
-      type: 'value'
+      type: 'value',
+
     },
     series: [
       {
@@ -63,7 +67,6 @@
       },
     ],
   });
-      console.log(option)
       
     function applyStatsToChart(stats) {
         var tempOption = {
@@ -81,18 +84,24 @@
             }
           },
           legend: {
+            formatter: '{name}',
             data: ['Hashrate', 'Miners', 'NetHash', 'NetDiff']
           },
           xAxis: {
             type: 'category',
-            data: ['00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00', '13:00','14:00','15:00', '16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00']
+            data: []
           },
           yAxis: [
           {
             type: 'value',
+            //min: 'dataMin',
             name: 'Hashrate',
             position: 'left',
             alignTicks: true,
+            nameTextStyle:{
+              color: colors[0],
+              align:'right'
+            },
             axisLine: {
               show: true,
               lineStyle: {
@@ -100,15 +109,22 @@
               }
             },
             axisLabel: {
+              color: colors[0],
               formatter: '{value} GH'
+              
             }
           },
           {
             type: 'value',
             name: 'Miners',
+            //min: 'dataMin',
             position: 'left',
             alignTicks: true,
             offset: 55,
+            nameTextStyle:{
+              color: colors[1],
+              align: 'right'
+            },
             axisLine: {
               show: true,
               lineStyle: {
@@ -116,30 +132,21 @@
               }
             },
             axisLabel: {
+              color: colors[1],
               formatter: '{value}'
             }
           },
           {
             type: 'value',
             name: 'NetDiff',
+            //min: 'dataMin',
             position: 'right',
             alignTicks: true,
-            offset: 55,
-            axisLine: {
-              show: true,
-              lineStyle: {
-                color: colors[1]
-              }
+            nameTextStyle:{
+              color: colors[2],
+              align: 'left'
             },
-            axisLabel: {
-              formatter: '{value} T'
-            }
-          },
-          {
-            type: 'value',
-            name: 'NetHash',
-            position: 'right',
-            alignTicks: true,
+            offset: 55,
             axisLine: {
               show: true,
               lineStyle: {
@@ -147,6 +154,28 @@
               }
             },
             axisLabel: {
+              color: colors[2],
+              formatter: '{value} T'
+            }
+          },
+          {
+            type: 'value',
+            name: 'NetHash',
+            //min: 'dataMin',
+            position: 'right',
+            alignTicks: true,
+            nameTextStyle:{
+              color: colors[3],
+              align: 'left'
+            },
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: colors[3]
+              }
+            },
+            axisLabel: {
+              color: colors[3],
               formatter: '{value} TH'
             }
           }
@@ -186,7 +215,8 @@
             type: 'line',
             data: [],
             smooth: true,
-            label: true
+            label: true,
+            color: colors[0]
           },
           {
             name: 'Miners',
@@ -194,6 +224,7 @@
             yAxisIndex: 1,
             data: [],
             smooth: true,
+            color:colors[1]
           },
           {
             name: 'NetHash',
@@ -201,6 +232,7 @@
             yAxisIndex: 2,
             data: [],
             smooth: true,
+            color: colors[2]
           },
           {
             name: 'NetDiff',
@@ -208,6 +240,7 @@
             yAxisIndex: 3,
             data: [],
             smooth: true,
+            color: colors[3]
           },
         ],
         
@@ -215,19 +248,35 @@
     }
 
     stats.forEach((singleStatObj, index)=>{
-        tempOption.xAxis.data[index] = singleStatObj.created.replace('Z',"") // Format the date here
-        tempOption.series[0].data[index] = singleStatObj.poolHashrate.toFixed(2) /1000000000
+        var d = new Date(singleStatObj.created)
+        tempOption.xAxis.data[index] = d.getHours() + ':00' // Format the date here
+        var poolHash = getReadableHashrate(singleStatObj.poolHashrate.toFixed(2))
+        var netHash = getReadableHashrate(singleStatObj.networkHashrate.toFixed(2))
+        console.log(netHash)
+        tempOption.series[0].data[index] = poolHash
         tempOption.series[1].data[index] = singleStatObj.connectedMiners
-        tempOption.series[2].data[index] = singleStatObj.networkHashrate.toFixed(2) /1000000000000
+        tempOption.series[2].data[index] = netHash
         tempOption.series[3].data[index] = singleStatObj.networkDifficulty.toFixed(2) /1000000000000
      })
-
+     function getReadableHashrate(hash) {
+          if(hash >1000){
+              return hash / 1000
+          }
+          else if(hash > 1000000){
+              return hash / 1000000
+          }
+          else if(hash > 1000000000){
+              return hash / 1000000000
+          }
+          else if(hash > 1000000000000){
+              return hash / 1000000000000
+          }
+        }
     option.value = tempOption
     }
-      
       function getStats() {
             axios
-            .get('https://pool.flazzard.com/api/pools/pug1/performance')
+            .get('https://pool.flazzard.com/api/pools/' + id.value +'/performance')
             .then((response) => {
             applyStatsToChart(response.data.stats)
             //console.log(response.data.stats)
@@ -235,8 +284,7 @@
             .catch((error) => {
                 console.log(error)
             })
-            
-        }
+          }   
         function formatHashrate(value, decimal, unit) {
         if (value === 0) {
             return "0 " + unit;

@@ -34,11 +34,6 @@
 <script>
 
 export default{
-  watch: {
-    '$route.params.id'(to, from) {
-      console.log('The id parameter has changed from', from, 'to', to)
-    }
-  },
   
 }
 </script>
