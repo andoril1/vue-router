@@ -252,24 +252,32 @@
         tempOption.xAxis.data[index] = d.getHours() + ':00' // Format the date here
         var poolHash = getReadableHashrate(singleStatObj.poolHashrate.toFixed(2))
         var netHash = getReadableHashrate(singleStatObj.networkHashrate.toFixed(2))
-        console.log(netHash)
+        var netDiff = getReadableHashrate(singleStatObj.networkDifficulty.toFixed(2))
         tempOption.series[0].data[index] = poolHash
         tempOption.series[1].data[index] = singleStatObj.connectedMiners
         tempOption.series[2].data[index] = netHash
-        tempOption.series[3].data[index] = singleStatObj.networkDifficulty.toFixed(2) /1000000000000
+        tempOption.series[3].data[index] = netDiff
      })
      function getReadableHashrate(hash) {
-          if(hash >1000){
-              return hash / 1000
-          }
-          else if(hash > 1000000){
-              return hash / 1000000
-          }
-          else if(hash > 1000000000){
-              return hash / 1000000000
-          }
-          else if(hash > 1000000000000){
-              return hash / 1000000000000
+          console.log(hash)
+          //display in Hash
+          if(hash < 1000) {
+            return hash
+          //display in KiloHash
+          } else if(hash < 1000000) {
+              return hash/1000
+          //display in MegaHash
+          } else if(hash < 1000000000) {
+              return hash/1000000
+          //display in GigaHash
+          } else if(hash < 1000000000000) {
+              return hash/1000000000
+          //display in TeraHash
+          } else if(hash < 1000000000000000) {
+            return hash/1000000000000
+          //display in PetaHash
+          } else if(hash < 1000000000000000000) {
+            return hash/1000000000000000
           }
         }
     option.value = tempOption
