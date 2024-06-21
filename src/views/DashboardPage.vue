@@ -24,12 +24,56 @@
                             <td style="padding-right: 10px;">{{ formatHashrate(blocks.totalPaid,2,"") }}</td>
                             <td style="padding-right: 10px;"><a :href="blocks.lastPaymentLink" style="text-decoration: none;" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><span v-html="renderTimeAgoBox(blocks.lastPayment)"></span></td>
                         </tr>
-                    </table>
-                        
+                        </table>
                       </div>
+                      </span>
+                    </div>
+                    <div class="info-box bg-yellow-gradient">
+                        <span class="info-box-text">
+                            <div><h2>Blocks found by you :</h2><hr>
+                    <table style="margin:auto">
+                        <tr>
+                            <th id="time">[Time]</th>
+                            <th id="one">[Mining Adress]</th>
+                            <th id="two">[Height]</th>
+                            <th id="three">[Net-Diff]</th>
+                            <th id="four">[Reward]</th>
+                            <th id="five">[Block Status]</th>
+                        </tr>
+                        <tr v-for="minerBlock in minerBlocks" :key="minerBlock.id">
+                            <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(minerBlock.created)"></span><hr></td>
+                            <td style="padding-right: 10px;">[{{minerBlock.miner.substring(0, 8)}}...{{ minerBlock.miner.substring(minerBlock.miner.length - 8) }}]<hr></td>
+                            <td style="padding-right: 10px;">{{minerBlock.blockHeight}}<hr></td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(minerBlock.networkDifficulty,1, "") }}<hr></td>
+                            <td style="padding-right: 10px;">{{minerBlock.reward}}<hr></td>
+                            <td style="padding-right: 10px;">{{minerBlock.status}} <a :href="minerBlock.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><hr></td>     
+                        </tr>
+                    </table> 
+                    </div>
                   </span>
               </div>
-          </div>
+              <div class="info-box bg-yellow-gradient">
+                <span class="info-box-text">
+                    <div><h2>Payments made to you :</h2><hr>
+            <table style="margin:auto">
+                <tr>
+                    <th id="time">[Time]</th>
+                    <th id="one">[Mining Adress]</th>
+                    <th id="two">[Amount]</th>
+                    <th id="three">[Confirmation]</th>
+                </tr>
+                <tr v-for="minerPayment in minerPay" :key="minerPayment.id">
+                    <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(minerPayment.created)"></span><hr></td>
+                    <td style="padding-right: 10px;">[{{minerPayment.address.substring(0, 8)}}...{{ minerPayment.address.substring(minerPayment.address.length - 8) }}]<hr></td>
+                    <td style="padding-right: 10px;">{{formatHashrate(minerPayment.amount,2,"")}}<hr></td>
+                    <td style="padding-right: 10px;"><a :href="minerPayment.transactionInfoLink" target="_blank">{{minerPayment.transactionConfirmationData.substring(0, 8)}}...{{minerPayment.transactionConfirmationData.substring(minerPayment.transactionConfirmationData.length - 8) }}]</a><hr></td>
+                    
+                </tr>
+            </table> 
+            </div>
+          </span>
+        </div>
+    </div>
     </div>
   </div>
 </template>
@@ -43,6 +87,8 @@ import {useRoute} from 'vue-router'
         
         const pools = ref([]);
         const blocks = ref([]);
+        const minerBlocks = ref([]);
+        const minerPay = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
         const walletAddress =ref(""); 
@@ -70,7 +116,28 @@ import {useRoute} from 'vue-router'
                 console.log(error)
             })           
         }
-        
+        function getMinerBlocks() {
+            axios
+            .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/blocks' )
+            .then((response) => {
+                //console.log(response.data)
+                minerBlocks.value =response.data
+            })
+            .catch((error) => {
+                console.log(error)
+            })           
+        }
+        function getMinerPay() {
+            axios
+            .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/payments' )
+            .then((response) => {
+                //console.log(response.data)
+                minerPay.value =response.data
+            })
+            .catch((error) => {
+                console.log(error)
+            })           
+        }
         watch(blocks,(newValue,oldValue) => { 
             if(newValue != oldValue) {
                 setTimeout(() => {
@@ -78,9 +145,10 @@ import {useRoute} from 'vue-router'
                 }, 60000);
         }});
         
-        function checkWallet(pool) {
-          alert('Wallet Loaded!')
+        function checkWallet() {
           getBlocks()
+          getMinerBlocks()
+          getMinerPay()
         }
         const filterCreated = computed(function() {
                 //show if PPLNS - Button is pressed
@@ -164,11 +232,15 @@ import {useRoute} from 'vue-router'
           getPools,
           pools,
           blocks,
+          minerBlocks,
+          minerPay,
           filterCreated,
           filterPending,
           id,
           formatHashrate,
           getBlocks,
+          getMinerBlocks,
+          getMinerPay,
           getTimeAgoAdmin,
           renderTimeAgoBox,
           walletAddress,

@@ -33,7 +33,7 @@
   const route = useRoute();
   const id = ref(route.params.id);
   const colors = ['#3C5AE0', '#F95B11', '#31F911', '#F911F2'];
-  let hashLabel = ref('H/s')
+  let hashLabel = "H/s"
   let netHashLabel = ref("")
   let netDiffLabel = ref("")
   const option = ref({
@@ -113,7 +113,7 @@
             },
             axisLabel: {
               color: colors[0],
-              formatter: '{value} ' + hashLabel.value
+              formatter: '{value} ' + hashLabel
               
             }
           },
@@ -249,7 +249,7 @@
         
         
     }
-
+    let yAxisLabels = []
     stats.forEach((singleStatObj, index)=>{
         var d = new Date(singleStatObj.created)
         tempOption.xAxis.data[index] = d.getHours() + ':00' // Format the date here
@@ -261,30 +261,34 @@
         tempOption.series[2].data[index] = netHash
         tempOption.series[3].data[index] = netDiff
      })
-     function getReadableHashrate(hash) {
+     tempOption.yAxis[0].axisLabel.formatter = '{value} ' + yAxisLabels[0]
+     tempOption.yAxis[2].axisLabel.formatter = '{value} ' + yAxisLabels[2]
+     tempOption.yAxis[3].axisLabel.formatter = '{value} ' + yAxisLabels[3]
+     
+     function getReadableHashrate(hash, index) {
           //display in Hash
           if(hash < 1000) {
-            hashLabel = "H/s"
+            yAxisLabels[index] = "H/s"
             return hash
           //display in KiloHash
           } else if(hash < 1000000) {
-              hashLabel = "KH/s"
+              yAxisLabels[index] = "KH/s"
               return hash/1000
           //display in MegaHash
           } else if(hash < 1000000000) {
-              hashLabel = "MH/s"
+              yAxisLabels[index] = "MH/s"
               return hash/1000000
           //display in GigaHash
           } else if(hash < 1000000000000) {
-              hashLabel = "GH/s"
+              yAxisLabels[index] = "GH/s"
               return hash/1000000000
           //display in TeraHash
           } else if(hash < 1000000000000000) {
-            hashLabel = "TH/s"
+            yAxisLabels[index] = "TH/s"
             return hash/1000000000000
           //display in PetaHash
           } else if(hash < 1000000000000000000) {
-            hashLabel = "PH/s"
+            yAxisLabels[index] = "PH/s"
             return hash/1000000000000000
           }
         }
