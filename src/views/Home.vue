@@ -59,14 +59,15 @@ export default {
                 return pools.value.filter((pool) => pool.paymentProcessing.payoutScheme)
             }
         });
-        /*
+        
         watch(pools,(newValue,oldValue) => { 
             if(newValue != oldValue) {
-                setInterval(() => {
+                setTimeout(() => {
+                    console.log('pools called')
                     getPools()
                 }, 60000);
         }});
-        */
+        
         function soloPressed() {
             showSolo.value = !showSolo.value
             if(showSolo.value){

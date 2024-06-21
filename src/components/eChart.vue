@@ -1,5 +1,6 @@
 <template>
     <v-chart class="chart" :option="option" autoresize />
+    {{ hashLabel }}
   </template>
   
   <script setup>
@@ -15,7 +16,7 @@
     DataZoomComponent
   } from 'echarts/components';
   import VChart, { THEME_KEY } from 'vue-echarts';
-  import { ref, provide, onMounted } from 'vue';
+  import { ref, provide, onMounted} from 'vue';
   import axios from 'axios';
   
   use([
@@ -32,6 +33,9 @@
   const route = useRoute();
   const id = ref(route.params.id);
   const colors = ['#3C5AE0', '#F95B11', '#31F911', '#F911F2'];
+  let hashLabel = ref('H/s')
+  let netHashLabel = ref("")
+  let netDiffLabel = ref("")
   const option = ref({
     title: {
       text: '',
@@ -66,8 +70,7 @@
         smooth: true,
       },
     ],
-  });
-      
+  }); 
     function applyStatsToChart(stats) {
         var tempOption = {
           title: {
@@ -97,7 +100,7 @@
             //min: 'dataMin',
             name: 'Hashrate',
             position: 'left',
-            alignTicks: true,
+            alignTicks: false,
             nameTextStyle:{
               color: colors[0],
               align:'right'
@@ -110,7 +113,7 @@
             },
             axisLabel: {
               color: colors[0],
-              formatter: '{value} GH'
+              formatter: '{value} ' + hashLabel.value
               
             }
           },
@@ -119,7 +122,7 @@
             name: 'Miners',
             //min: 'dataMin',
             position: 'left',
-            alignTicks: true,
+            alignTicks: false,
             offset: 55,
             nameTextStyle:{
               color: colors[1],
@@ -141,7 +144,7 @@
             name: 'NetDiff',
             //min: 'dataMin',
             position: 'right',
-            alignTicks: true,
+            alignTicks: false,
             nameTextStyle:{
               color: colors[2],
               align: 'left'
@@ -163,7 +166,7 @@
             name: 'NetHash',
             //min: 'dataMin',
             position: 'right',
-            alignTicks: true,
+            alignTicks: false,
             nameTextStyle:{
               color: colors[3],
               align: 'left'
@@ -259,24 +262,29 @@
         tempOption.series[3].data[index] = netDiff
      })
      function getReadableHashrate(hash) {
-          console.log(hash)
           //display in Hash
           if(hash < 1000) {
+            hashLabel = "H/s"
             return hash
           //display in KiloHash
           } else if(hash < 1000000) {
+              hashLabel = "KH/s"
               return hash/1000
           //display in MegaHash
           } else if(hash < 1000000000) {
+              hashLabel = "MH/s"
               return hash/1000000
           //display in GigaHash
           } else if(hash < 1000000000000) {
+              hashLabel = "GH/s"
               return hash/1000000000
           //display in TeraHash
           } else if(hash < 1000000000000000) {
+            hashLabel = "TH/s"
             return hash/1000000000000
           //display in PetaHash
           } else if(hash < 1000000000000000000) {
+            hashLabel = "PH/s"
             return hash/1000000000000000
           }
         }

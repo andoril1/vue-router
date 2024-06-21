@@ -1,6 +1,6 @@
 <template>
   <div class="row justify-content-center">
-    <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
+    <div class="col-auto" v-for="pool in pools" :key="pool.id">
         <div class="info-box bg-yellow-gradient">
           <table style="margin: auto;">
                         <tr>
@@ -10,7 +10,6 @@
                             <th id="time" style="padding-right: 10px;">[Block]<br>[Value]</th>
                             <th id="time" style="padding-right: 10px;">[Pool]<br>[TTF]</th>
                             <th id="time" style="padding-right: 10px;">[Block]<br>[Reward]</th>
-                            
                         </tr>
                         <tr>
                             <td style="padding-right: 10px;">{{ pool.networkStats.blockHeight }}</td>
@@ -18,8 +17,7 @@
                             <td style="padding-right: 10px;">{{ pool.totalBlocks }}</td>
                             <td style="padding-right: 10px;">Coming Soon ...</td>
                             <td style="padding-right: 10px;">Coming Soon ...</td>
-                            <td style="padding-right: 10px;" v-for="block in filterCreated" :key="block.id">{{ block.reward }}</td>
-                            
+                            <td style="padding-right: 10px;">{{ blocks[14].reward }}</td>
                         </tr>
                         <br>
                         <tr>
@@ -58,44 +56,42 @@
           
           const pools = ref([]);
           const blocks = ref([]);
-          const coinPrice = ref([])
+          const coinPrice = ref([]);
           const route = useRoute();
           const id = ref(route.params.id);
-          const pending = ref(0);
           function getPools() {
               axios
-              .get('https://pool.flazzard.com/api/pools')
+              .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
-                  pools.value =response.data.pools
-                  //console.log(response.data.pools)
+                  pools.value =response.data
+                  //console.log(pools.value)
               })
               .catch((error) => {
                   console.log(error)
               })
-          /*
+          }
+          
           watch(pools,(newValue,oldValue) => { 
-              if(newValue != oldValue) {
-                  setInterval(() => {
-                      getPools()
-                  }, 60000);
-                  clearInterval()
-          }});
+            if(newValue != oldValue) {
+                setTimeout(() => {
+                    console.log('pools called')
+                    getPools()
+                }, 60000);
+        }});
           
           watch(blocks,(newValue,oldValue) => { 
               if(newValue != oldValue) {
-                  setInterval(() => {
+                  setTimeout(() => {
                       getBlocks()
                   }, 60000);
           }});
-          */
-          }
           function getBlocks() {
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
             .then((response) => {
                 //console.log(response.data.pools)
                 blocks.value =response.data
-                //console.log(response.data)
+                console.log(response.data)
 
             })
             .catch((error) => {
@@ -117,47 +113,37 @@
             })
             
           }
-          const pendingBlock = computed(function(block) {
-                if(block.status == 'pending') {
-                  pending++
-                }
-                else return pending = 0;
-          });
-          const filterCoin = computed(function() {
-                  //show if PPLNS - Button is pressed
-                  return pools.value.filter((pool) => pool.id==id.value)
-          });
           const filterCreated = computed(function() {
-                  //show if PPLNS - Button is pressed
-                  return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
+                //show if PPLNS - Button is pressed
+                return blocks.value.filter((block) => block.created=='2024-06-21T04:22:24.644135Z')
           });
           const filterPending = computed(function() {
-                  //show if PPLNS - Button is pressed
-                  return blocks.value.filter((block) => block.status=='pending')
+                //show if PPLNS - Button is pressed
+                return blocks.value.filter((block) => block.status=='pending')
           });
           function formatHashrate(value, decimal, unit) {
-        if (value === 0) {
-            return "0 " + unit;
-        } else {
-            var si = [
-            { value: 1, symbol: "" },
-            { value: 1e3, symbol: "k" },
-            { value: 1e6, symbol: "M" },
-            { value: 1e9, symbol: "G" },
-            { value: 1e12, symbol: "T" },
-            { value: 1e15, symbol: "P" },
-            { value: 1e18, symbol: "E" },
-            { value: 1e21, symbol: "Z" },
-            { value: 1e24, symbol: "Y" }
-            ];
-            for (var i = si.length - 1; i > 0; i--) {
-            if (value >= si[i].value) {
-                break;
+            if (value === 0) {
+                return "0 " + unit;
+            } else {
+                var si = [
+                { value: 1, symbol: "" },
+                { value: 1e3, symbol: "k" },
+                { value: 1e6, symbol: "M" },
+                { value: 1e9, symbol: "G" },
+                { value: 1e12, symbol: "T" },
+                { value: 1e15, symbol: "P" },
+                { value: 1e18, symbol: "E" },
+                { value: 1e21, symbol: "Z" },
+                { value: 1e24, symbol: "Y" }
+                ];
+                for (var i = si.length - 1; i > 0; i--) {
+                if (value >= si[i].value) {
+                    break;
+                }
+                }
+                return ((value / si[i].value).toFixed(decimal).replace(/.0+$|(.[0-9]*[1-9])0+$/, "$1") + " " + si[i].symbol + unit);
+                }
             }
-            }
-            return ((value / si[i].value).toFixed(decimal).replace(/.0+$|(.[0-9]*[1-9])0+$/, "$1") + " " + si[i].symbol + unit);
-            }
-        }
         function getTimeAgoAdmin(date) {
           date=new Date(date)
       if (!date || isNaN(date.getTime())) {
@@ -209,9 +195,6 @@
             getPools,
             pools,
             blocks,
-            pending,
-            pendingBlock,
-            filterCoin,
             filterCreated,
             filterPending,
             id,

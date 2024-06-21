@@ -1,6 +1,6 @@
 <template>
     <div class="row d-flex justify-content-center">
-    <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
+    <div class="col-auto" v-for="pool in pools" :key="pool.id">
         <div class="info-box bg-yellow-gradient">
                 <span class="info-box-text">
                     <h3>Our Top Miners for {{ pool.coin.name }}[{{ pool.coin.symbol }}]</h3>
@@ -27,7 +27,7 @@
   
   <script>
   import axios from 'axios'
-  import {ref,computed} from 'vue'
+  import {ref, watch} from 'vue'
   import {useRoute} from 'vue-router'
     export default {
       setup(){
@@ -37,21 +37,22 @@
           const id = ref(route.params.id);
           function getPools() {
               axios
-              .get('https://pool.flazzard.com/api/pools')
+              .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
                   //console.log(response.data.pools)
-                  pools.value =response.data.pools
-                  console.log(response.data.pools)
+                  pools.value =response.data
+                  //console.log(response.data)
               })
               .catch((error) => {
                   console.log(error)
-              })
-              
+              })  
           }
-          const filterCoin = computed(function() {
-                  //show if PPLNS - Button is pressed
-                  return pools.value.filter((pool) => pool.id==id.value)
-          });
+          watch(pools,(newValue,oldValue) => { 
+            if(newValue != oldValue) {
+                setTimeout(() => {
+                    getPools()
+                }, 60000);
+          }});
           function formatHashrate(value, decimal, unit) {
         if (value === 0) {
             return "0 " + unit;
@@ -78,7 +79,6 @@
           return{
             getPools,
             pools,
-            filterCoin,
             id,
             formatHashrate
           }

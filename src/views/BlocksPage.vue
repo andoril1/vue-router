@@ -1,7 +1,7 @@
 <template>
     <div class="container">
       <div class="row d-flex justify-content-center">
-        <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
+        <div class="col-auto" v-for="pool in pools" :key="pool.id">
             <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
                         <h2>Blocks found by Pool - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h2>
@@ -16,13 +16,12 @@
                             <th id="five">[Block Status]</th>
                         </tr>
                         <tr v-for="block in blocks" :key="block.id">
-                            <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
-                            <td style="padding-right: 10px;"><a :href="pool.addressInfoLink.replace(pool.address, block.miner)" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]</td>
-                            <td style="padding-right: 10px;">{{ block.blockHeight }}</td>
-                            <td style="padding-right: 10px;">{{ formatHashrate(block.networkDifficulty,1, "") }}</td>
-                            <td style="padding-right: 10px;">{{ block.reward }}</td>
-                            <td style="padding-right: 10px;">{{ block.status }}</td> 
-                            
+                            <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span><hr></td>
+                            <td style="padding-right: 10px;">[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]<hr></td>
+                            <td style="padding-right: 10px;">{{ block.blockHeight }}<hr></td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(block.networkDifficulty,1, "") }}<hr></td>
+                            <td style="padding-right: 10px;">{{ block.reward }}<hr></td>
+                            <td style="padding-right: 10px;">{{ block.status }} <a :href="block.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><hr></td>     
                         </tr>
                     </table>
                     </span>
@@ -40,16 +39,15 @@
       setup(){
           
           const pools = ref([]);
-          const blocks = ref(["hello"]);
+          const blocks = ref([""]);
           const route = useRoute();
           const id = ref(route.params.id);
-          const pending = ref(0);
           function getPools() {
               axios
-              .get('https://pool.flazzard.com/api/pools')
+              .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
                   //console.log(response.data.pools)
-                  pools.value =response.data.pools
+                  pools.value =response.data
                   //console.log(response.data.pools)
               })
               .catch((error) => {
@@ -63,7 +61,7 @@
             .then((response) => {
                 //console.log(response.data.pools)
                 blocks.value =response.data
-                //console.log(response.data)
+                console.log(response.data)
 
             })
             .catch((error) => {
@@ -71,16 +69,6 @@
             })
             
         }
-          const pendingBlock = computed(function(block) {
-                if(block.status == 'pending') {
-                  pending++
-                }
-                else return pending = 0;
-          });
-          const filterCoin = computed(function() {
-                  //show if PPLNS - Button is pressed
-                  return pools.value.filter((pool) => pool.id==id.value)
-          });
           const filterCreated = computed(function() {
                   //show if PPLNS - Button is pressed
                   return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
@@ -163,9 +151,6 @@
             getPools,
             pools,
             blocks,
-            pending,
-            pendingBlock,
-            filterCoin,
             filterCreated,
             filterPending,
             id,

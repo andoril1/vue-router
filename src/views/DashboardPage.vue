@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row d-flex justify-content-center">
-      <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
+      <div class="col-auto" v-for="pool in pools" :key="pool.id">
           <div class="info-box bg-yellow-gradient">
                   <span class="info-box-text">
                       <h2>Your Dashboard - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h2>
@@ -36,7 +36,7 @@
 
 <script>
 import axios from 'axios'
-import {ref,computed} from 'vue'
+import {ref,computed, watch} from 'vue'
 import {useRoute} from 'vue-router'
   export default {
     setup(){
@@ -45,15 +45,13 @@ import {useRoute} from 'vue-router'
         const blocks = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
-        const pending = ref(0);
-        const buttonPressed =ref(false)
         const walletAddress =ref(""); 
         function getPools() {
             axios
-            .get('https://pool.flazzard.com/api/pools')
+            .get('https://pool.flazzard.com/api/pools/' + id.value)
             .then((response) => {
                 //console.log(response.data.pools)
-                pools.value =response.data.pools
+                pools.value =response.data
                 //console.log(response.data.pools)
             })
             .catch((error) => {
@@ -61,27 +59,29 @@ import {useRoute} from 'vue-router'
             })
             
         }
-        function getBlocks(coin, section,wallet) {
+        function getBlocks() {
             axios
-            .get('https://pool.flazzard.com/api/pools' + '/' + coin + '/' + section + '/' + wallet)
+            .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value)
             .then((response) => {
-                //console.log(response.data.pools)
+                //console.log(response.data)
                 blocks.value =response.data
             })
             .catch((error) => {
                 console.log(error)
-            })       
-            
-            
+            })           
         }
+        
+        watch(blocks,(newValue,oldValue) => { 
+            if(newValue != oldValue) {
+                setTimeout(() => {
+                    getBlocks()
+                }, 60000);
+        }});
+        
         function checkWallet(pool) {
           alert('Wallet Loaded!')
-          getBlocks(pool, 'miners', walletAddress.value)
+          getBlocks()
         }
-        const filterCoin = computed(function() {
-                //show if PPLNS - Button is pressed
-                return pools.value.filter((pool) => pool.id==id.value)
-        });
         const filterCreated = computed(function() {
                 //show if PPLNS - Button is pressed
                 return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
@@ -164,8 +164,6 @@ import {useRoute} from 'vue-router'
           getPools,
           pools,
           blocks,
-          pending,
-          filterCoin,
           filterCreated,
           filterPending,
           id,
@@ -174,7 +172,6 @@ import {useRoute} from 'vue-router'
           getTimeAgoAdmin,
           renderTimeAgoBox,
           walletAddress,
-          buttonPressed,
           checkWallet
         }
         

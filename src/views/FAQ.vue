@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
+      <div class="col-auto" v-for="pool in pools" :key="pool.id">
         <div class="info-box bg-yellow-gradient">
           <span class="info-box-text">
             <h4>Q: Do I need to register an account to mine?</h4>
@@ -173,10 +173,10 @@ export default {
       const id = ref(route.params.id);
       function getPools() {
           axios
-          .get('https://pool.flazzard.com/api/pools')
+          .get('https://pool.flazzard.com/api/pools/' + id.value)
           .then((response) => {
               //console.log(response.data.pools)
-              pools.value =response.data.pools
+              pools.value =response.data
               //console.log(response.data.pools)
           })
           .catch((error) => {
@@ -200,16 +200,11 @@ export default {
           })
           
       }
-      const filterCoin = computed(function() {
-              //show if PPLNS - Button is pressed
-              return pools.value.filter((pool) => pool.id==id.value)
-      });
       return{
         getPools,
         getBlocks,
         pools,
         blocks,
-        filterCoin,
         id,
         copyMe
       }

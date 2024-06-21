@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row d-flex justify-content-center">
-      <div class="col-auto" v-for="pool in filterCoin" :key="pool.id">
+      <div class="col-auto" v-for="pool in pools" :key="pool.id">
           <div class="info-box bg-yellow-gradient">
                   <span class="info-box-text">
                       <h2>Payments to Miners - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h2>
@@ -16,7 +16,7 @@
                       <tr v-for="block in blocks" :key="block.id">
                           <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
                           <td style="padding-right: 10px;"><a :href="block.addressInfoLink" target="_blank">[{{block.address.substring(0, 8)}}...{{ block.address.substring(block.address.length - 8) }}]</a></td>
-                          <td style="padding-right: 10px;">{{ formatHashrate(block.amount,2,pool.coin.symbol) }}</td>
+                          <td style="padding-right: 10px;">{{ formatHashrate(block.amount,2,"") }} {{pool.coin.symbol}}</td>
                           <td style="padding-right: 10px;"><a :href="block.transactionInfoLink" target="_blank">{{ block.transactionConfirmationData.substring(0, 8)}}...{{block.transactionConfirmationData.substring(block.transactionConfirmationData.length - 8) }}]</a></td>
                       </tr>
                   </table>
@@ -30,23 +30,21 @@
 
 <script>
 import axios from 'axios'
-import {ref,computed} from 'vue'
+import {ref,computed, watch} from 'vue'
 import {useRoute} from 'vue-router'
   export default {
     setup(){
         
         const pools = ref([]);
-        const blocks = ref(["hello"]);
+        const blocks = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
-        const pending = ref(0);
         function getPools() {
             axios
-            .get('https://pool.flazzard.com/api/pools')
+            .get('https://pool.flazzard.com/api/pools/' + id.value)
             .then((response) => {
-                //console.log(response.data.pools)
-                pools.value =response.data.pools
-                //console.log(response.data.pools)
+                pools.value =response.data
+                //console.log(response.data)
             })
             .catch((error) => {
                 console.log(error)
@@ -64,19 +62,14 @@ import {useRoute} from 'vue-router'
           })
           .catch((error) => {
               console.log(error)
-          })
-          
-      }
-        const pendingBlock = computed(function(block) {
-              if(block.status == 'pending') {
-                pending++
-              }
-              else return pending = 0;
-        });
-        const filterCoin = computed(function() {
-                //show if PPLNS - Button is pressed
-                return pools.value.filter((pool) => pool.id==id.value)
-        });
+          })   
+        }
+        watch(blocks,(newValue,oldValue) => { 
+            if(newValue != oldValue) {
+                setTimeout(() => {
+                    getBlocks()
+                }, 60000);
+        }});
         const filterCreated = computed(function() {
                 //show if PPLNS - Button is pressed
                 return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
@@ -159,9 +152,6 @@ import {useRoute} from 'vue-router'
           getPools,
           pools,
           blocks,
-          pending,
-          pendingBlock,
-          filterCoin,
           filterCreated,
           filterPending,
           id,
