@@ -1,6 +1,5 @@
 <template>
     <v-chart class="chart" :option="option" autoresize />
-    {{ hashLabel }}
   </template>
   
   <script setup>
@@ -123,7 +122,7 @@
             //min: 'dataMin',
             position: 'left',
             alignTicks: false,
-            offset: 55,
+            offset: 75,
             nameTextStyle:{
               color: colors[1],
               align: 'right'
@@ -149,7 +148,7 @@
               color: colors[2],
               align: 'left'
             },
-            offset: 55,
+            offset: 75,
             axisLine: {
               show: true,
               lineStyle: {
@@ -253,9 +252,9 @@
     stats.forEach((singleStatObj, index)=>{
         var d = new Date(singleStatObj.created)
         tempOption.xAxis.data[index] = d.getHours() + ':00' // Format the date here
-        var poolHash = getReadableHashrate(singleStatObj.poolHashrate.toFixed(2))
-        var netHash = getReadableHashrate(singleStatObj.networkHashrate.toFixed(2))
-        var netDiff = getReadableHashrate(singleStatObj.networkDifficulty.toFixed(2))
+        var poolHash = getReadableHashrate(singleStatObj.poolHashrate.toFixed(2),0)
+        var netHash = getReadableHashrate(singleStatObj.networkHashrate.toFixed(2),2)
+        var netDiff = getReadableHashrate(singleStatObj.networkDifficulty.toFixed(2),3)
         tempOption.series[0].data[index] = poolHash
         tempOption.series[1].data[index] = singleStatObj.connectedMiners
         tempOption.series[2].data[index] = netHash
@@ -268,27 +267,27 @@
      function getReadableHashrate(hash, index) {
           //display in Hash
           if(hash < 1000) {
-            yAxisLabels[index] = "H/s"
+            yAxisLabels[index] = ((index == 2) ? 'H' : 'H/s')
             return hash
           //display in KiloHash
           } else if(hash < 1000000) {
-              yAxisLabels[index] = "KH/s"
+              yAxisLabels[index] = ((index == 2) ? 'K' : 'KH/s')
               return hash/1000
           //display in MegaHash
           } else if(hash < 1000000000) {
-              yAxisLabels[index] = "MH/s"
+              yAxisLabels[index] = ((index == 2) ? 'M' : 'MH/s')
               return hash/1000000
           //display in GigaHash
           } else if(hash < 1000000000000) {
-              yAxisLabels[index] = "GH/s"
+              yAxisLabels[index] = ((index == 2) ? 'G' : 'GH/s')
               return hash/1000000000
           //display in TeraHash
           } else if(hash < 1000000000000000) {
-            yAxisLabels[index] = "TH/s"
+            yAxisLabels[index] = ((index == 2) ? 'T' : 'TH/s')
             return hash/1000000000000
           //display in PetaHash
           } else if(hash < 1000000000000000000) {
-            yAxisLabels[index] = "PH/s"
+            yAxisLabels[index] = ((index == 2) ? 'P' : 'PH/s')
             return hash/1000000000000000
           }
         }

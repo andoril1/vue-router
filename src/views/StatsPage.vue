@@ -15,8 +15,9 @@
                             <td style="padding-right: 10px;">{{ pool.networkStats.blockHeight }}</td>
                             <td style="padding-right: 10px;">{{ filterPending.length }}</td>
                             <td style="padding-right: 10px;">{{ pool.totalBlocks }}</td>
-                            <td style="padding-right: 10px;">Coming Soon ...</td>
-                            <td style="padding-right: 10px;">Coming Soon ...</td>
+                            <!--<div v-for="price in getPrice(pool.coin.symbol)" :key="price.id"></div>-->
+                            <td style="padding-right: 10px;">{{setSymbol(pool.coin.symbol)}}${{formatHashrate(coinPrice.lastPrice * blocks[14].reward,4,"")}}</td>
+                            <td style="padding-right: 10px;">{{readableSeconds(pool.networkStats.networkHashrate / pool.poolStats.poolHashrate * pool.blockRefreshInterval) }}</td>
                             <td style="padding-right: 10px;">{{ blocks[14].reward }}</td>
                         </tr>
                         <br>
@@ -30,7 +31,7 @@
                         <tr>
                             <td style="padding-right: 10px;">{{ pool.paymentProcessing.minimumPayment }} {{ pool.coin.symbol }}</td>
                             <td style="padding-right: 10px;">{{pool.poolFeePercent}}%</td>
-                            <td style="padding-right: 10px;">Coming soon ...</td>
+                            <td style="padding-right: 10px;" v-bind="checkEffort(pool.coin.family,pool.poolEffort, pool.coin.name)">{{PoolEffort}}</td>
                             <td style="padding-right: 10px;">{{ formatHashrate(pool.totalPaid,3,"") }} [{{ pool.coin.symbol }}]</td>
                             <td style="padding-right: 10px;">{{ pool.networkStats.connectedPeers }}</td>
                             
@@ -45,7 +46,7 @@
   
   <script>
   import axios from 'axios'
-  import {ref,computed, watch} from 'vue'
+  import {ref,computed, watch, onBeforeUpdate} from 'vue'
   import {useRoute} from 'vue-router'
   import agChart from '@/components/eChart.vue'
     export default {
@@ -56,7 +57,9 @@
           
           const pools = ref([]);
           const blocks = ref([]);
-          const coinPrice = ref([]);
+          const coinPrice = ref({});
+          let coinSymbol = ref("");
+          let PoolEffort = ref("")
           const route = useRoute();
           const id = ref(route.params.id);
           function getPools() {
@@ -64,17 +67,16 @@
               .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
                   pools.value =response.data
-                  //console.log(pools.value)
+                  console.log(pools.value)
               })
               .catch((error) => {
                   console.log(error)
               })
-          }
-          
+          }           
+
           watch(pools,(newValue,oldValue) => { 
             if(newValue != oldValue) {
                 setTimeout(() => {
-                    console.log('pools called')
                     getPools()
                 }, 60000);
         }});
@@ -85,13 +87,20 @@
                       getBlocks()
                   }, 60000);
           }});
+          watch(coinSymbol,(newValue,oldValue) => { 
+              if(newValue != oldValue) {
+                console.log('changed')
+                getPrice(coinSymbol)
+          }});
+          setTimeout(() => {
+                    getPrice(coinSymbol)
+                  }, 60000);
           function getBlocks() {
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
             .then((response) => {
-                //console.log(response.data.pools)
                 blocks.value =response.data
-                console.log(response.data)
+                //console.log(response.data)
 
             })
             .catch((error) => {
@@ -100,23 +109,23 @@
             
         }
           function getPrice(ticker) {
+            console.log(ticker)
             axios
             .get('https://api.xeggex.com/api/v2/market/getbysymbol/' + ticker + '%2FUSDT')
             .then((response) => {
-                //console.log(response.data.pools)
                 coinPrice.value =response.data
-                console.log(response.data)
+                //console.log(coinPrice.value)
 
             })
             .catch((error) => {
                 console.log(error)
             })
-            
           }
-          const filterCreated = computed(function() {
-                //show if PPLNS - Button is pressed
-                return blocks.value.filter((block) => block.created=='2024-06-21T04:22:24.644135Z')
-          });
+          function setSymbol(symbol){
+                coinSymbol = symbol
+                //console.log(coinSymbol)
+                return coinSymbol   
+          }
           const filterPending = computed(function() {
                 //show if PPLNS - Button is pressed
                 return blocks.value.filter((block) => block.status=='pending')
@@ -191,18 +200,81 @@
       }
       return "<div class='d-flex align-items-center justify-content-center' style='background-color:" + bgColor + "; color: " + textColor + "; border-radius: " + borderRadius + "; width: 100%; padding: 2px; font-size: 75%; font-weight: 700; text-align: center; height: 20px;'>" + timeAgo + "</div>";
       }
+
+      // String Convert -> Seconds
+        function readableSeconds(t) {
+            var seconds = Math.floor(t % 3600 % 60);
+            var minutes = Math.floor(t % 3600 / 60);
+            var hours = Math.floor(t % 86400 / 3600);
+            var days = Math.floor(t % 604800 / 86400);	
+            var weeks = Math.floor(t % 2629799.8272 / 604800);
+            var months = Math.floor(t % 31557597.9264 / 2629799.8272);
+            var years = Math.floor(t / 31557597.9264);
+
+            var sYears = years > 0 ? years + ((years== 1) ? "y" : "y") : "";
+            var sMonths = months > 0 ? ((years > 0) ? " " : "") + months + ((months== 1) ? "mo" : "mo") : "";
+            var sWeeks = weeks > 0 ? ((years > 0 || months > 0) ? " " : "") + weeks + ((weeks== 1) ? "w" : "w") : "";
+            var sDays = days > 0 ? ((years > 0 || months > 0 || weeks > 0) ? " " : "") + days + ((days== 1) ? "d" : "d") : "";
+            var sHours = hours > 0 ? ((years > 0 || months > 0 || weeks > 0 || days > 0) ? " " : "") + hours + (hours== 1 ? "h" : "h") : "";
+            var sMinutes = minutes > 0 ? ((years > 0 || months > 0 || weeks > 0 || days > 0 || hours > 0) ? " " : "") + minutes + (minutes == 1 ? "m" : "m") : "";
+            var sSeconds = seconds > 0 ? ((years > 0 || months > 0 || weeks > 0 || days > 0 || hours > 0 || minutes > 0) ? " " : "") + seconds + (seconds == 1 ? "s" : "s") : ((years < 1 && months < 1 && weeks < 1 && days < 1 && hours < 1 && minutes < 1 ) ? " Few milliseconds" : "");
+            if (seconds > 0) return sYears + sMonths + sWeeks + sDays + sHours + sMinutes + sSeconds;
+            else return "&#8734;";
+        }
+        function checkEffort(family, poolEffort, coinName) {
+            if (family == "alephium") {
+                PoolEffort = Number(poolEffort) * Math.pow(2, 30) * 100;
+                // Bitcoin (family)
+            } else if (family == "bitcoin") {
+                // Vertcoin (coin)
+                if (coinName == "Vertcoin") {
+                PoolEffort = (Number(poolEffort) / 256) * 100;
+                // VishAI (coin)
+                } else if (coinName == "Vishai") {
+                PoolEffort = (Number(poolEffort) / 65536) * 100;
+                // Reaction (coin)
+                } else if (coinName == "Reaction") {
+                PoolEffort = (Number(poolEffort) / 65536) * 100;
+                } else {
+                PoolEffort = Number(poolEffort) * 100;
+                }
+                // Kaspa (family)
+            } else if (family == "kaspa") {
+                PoolEffort = Number(poolEffort) * Math.pow(2, 31) * 100;
+            } else {
+                PoolEffort = Number(poolEffort) * 100;
+            }
+            console.log(PoolEffort)
+            var effortClass = "";
+            if (PoolEffort >= 500) {
+                effortClass = "effort4";
+            } else if (PoolEffort >= 300) {
+                effortClass = "effort3";
+            } else if (PoolEffort >= 200) {
+                effortClass = "effort2";
+            } else if (PoolEffort >= 100) {
+                effortClass = "effort1";
+            }
+            else {
+                effortClass = "effort0";
+            }
+        }
           return{
             getPools,
             pools,
             blocks,
-            filterCreated,
+            coinPrice,
             filterPending,
             id,
+            coinSymbol,
             formatHashrate,
             getBlocks,
             getPrice,
             renderTimeAgoBox,
             getTimeAgoAdmin,
+            readableSeconds,
+            setSymbol,
+            checkEffort
           }
           
   
@@ -210,7 +282,6 @@
       mounted() {
           this.getPools();
           this.getBlocks();
-          //this.getPrice();
       },
     
     }

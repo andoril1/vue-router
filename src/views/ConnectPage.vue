@@ -36,7 +36,7 @@
                         <tr v-for="(value, id) in pool.ports" :key="id">
                            
                             <td style="padding-right: 10px;">
-                                <h6><button @click="copyMe('stratum+tcp://eu.flazzard.com:', id)" style="background-color: transparent; padding: 0px">
+                                <h6><button @click="copyMe('stratum+tcp://eu.flazzard.com:', id)" style="background-color: transparent; padding: 0px;">
                                 <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button>
                                 stratum+tcp://eu.flazzard.com:{{ id }}</h6><hr>
                             </td>
@@ -99,7 +99,6 @@ import {ref} from 'vue'
 import {useRoute} from 'vue-router'
   export default {
     setup(){
-        
         const pools = ref([]);
         const blocks = ref([]);
         const route = useRoute();
@@ -130,8 +129,43 @@ import {useRoute} from 'vue-router'
             })
             .catch((error) => {
                 console.log(error)
-            })
-            
+            })    
+        }
+        let stratumConnectionInfo = [];
+
+        function ping(stratumObj, pong) {
+        var started = new Date().getTime();
+        var http = new XMLHttpRequest();
+        http.open("GET", "https://" + stratumObj.url, /*async*/true);
+        http.onreadystatechange = function() {
+            if (http.readyState == 4) {
+            var ended = new Date().getTime();
+
+            var milliseconds = ended - started;
+
+            if (pong != null) {
+                pong(stratumObj, milliseconds);
+            }
+            }
+        };
+        try {
+            http.send(null);
+        } catch(err) {
+            console.error(err);
+        }
+        }
+
+        function getStratumStatus() {
+            console.log("Getting status for each stratum",stratumConnectionInfo)
+            $.each(stratumConnectionInfo, function(index, value) {
+                ping(value, updateStratumDisplay)
+            });
+        }
+
+        function updateStratumDisplay(stratumObj, ping) {
+            console.log("Stratum tested:", stratumObj);
+            console.log("Ping time:", ping);
+            $("#ping-" + stratumObj.id).text(ping + " ms")
         }
         return{
           getPools,
@@ -139,7 +173,8 @@ import {useRoute} from 'vue-router'
           pools,
           blocks,
           id,
-          copyMe
+          copyMe,
+          getStratumStatus
         }
         
 
@@ -153,5 +188,5 @@ import {useRoute} from 'vue-router'
   </script>
   
   <style>
-  
+    
   </style>
