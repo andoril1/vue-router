@@ -85,18 +85,16 @@
                                         </tr>
                                     </div>
                                     <div v-if="buttonString == 'miners'">
-                                        <div v-for="minerPerf in minerPerformance" :key="minerPerf.id">
                                             <tr>
                                                 <th id="one">[Worker name]</th>
                                                 <th id="two">[Hashrate]</th>
                                                 <th id="three">[Shares per second]</th>
                                             </tr>
-                                            <tr v-for="(index,value) in minerPerf.workers" :key="index">
+                                            <tr v-for="(_id,value) in minerPerformance[minerPerformance.length -1].workers" :key="_id">
                                                 <td style="padding-right: 10px;">[{{ value }}]<hr></td>
-                                                <td style="padding-right: 10px;" v-bind="minerHashrate=index.hashrate">{{formatHashrate(index.hashrate,2,"H/s")}}<hr></td>
-                                                <td style="padding-right: 10px;">{{formatHashrate(index.sharesPerSecond, 2,"S/s")}}<hr></td>
+                                                <td style="padding-right: 10px;" v-bind="minerHashrate=_id.hashrate">{{formatHashrate(_id.hashrate,2,"H/s")}}<hr></td>
+                                                <td style="padding-right: 10px;">{{formatHashrate(_id.sharesPerSecond, 2,"S/s")}}<hr></td>
                                             </tr>
-                                        </div>
                                     </div>
                                     <div v-if="buttonString == 'customPayout'">
                                         <tr>
