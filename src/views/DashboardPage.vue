@@ -215,15 +215,14 @@ import {useRoute} from 'vue-router'
                 console.log(error)
             })           
         }
-        function getMinerSettings() {
+        function setMinerThreshold() {
             axios
             .post('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/settings', {paymentThreshold: thresholdAmount, ipAddress: ipAddress} )
             .then((response) => {
-                minerSettings.value =response.data
-                console.log(minerSettings.value)
+                console.log('Response:', response.data)
             })
             .catch((error) => {
-                console.log(error)
+                console.log('Error:', error)
             })           
         }
         watch(blocks,(newValue,oldValue) => { 
@@ -242,7 +241,7 @@ import {useRoute} from 'vue-router'
         }});
         function checkWallet() {
             headerText = 'Wallet loaded!';
-            console.log(headerText)
+            //console.log(headerText)
             getBlocks()
             getMinerBlocks()
             getMinerPay()
@@ -349,30 +348,32 @@ import {useRoute} from 'vue-router'
         }
         return{
           getPools,
+          getBlocks,
+          getMinerBlocks,
+          getMinerPay,
+          getMinerPerformance,
+          getMinerSettings,
+          setMinerThreshold,
+          checkWallet,
+          getTimeAgoAdmin,
+          formatHashrate,
+          renderTimeAgoBox,
+          readableSeconds,
           pools,
           blocks,
           minerBlocks,
           minerPay,
           minerPerformance,
-          filterCreated,
-          filterPending,
-          id,
+          thresholdAmount,
+          minerSettings,
+          walletAddress,
           buttonString,
           headerText,
           minerHashrate,
           ipAddress,
-          thresholdAmount,
-          formatHashrate,
-          getBlocks,
-          getMinerBlocks,
-          getMinerPay,
-          getTimeAgoAdmin,
-          renderTimeAgoBox,
-          walletAddress,
-          checkWallet,
-          getMinerPerformance,
-          readableSeconds,
-          minerSettings
+          filterCreated,
+          filterPending,
+          id
         }
         
 
