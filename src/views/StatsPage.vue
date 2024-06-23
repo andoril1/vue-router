@@ -31,7 +31,7 @@
                         <tr>
                             <td style="padding-right: 10px;">{{ pool.paymentProcessing.minimumPayment }} {{ pool.coin.symbol }}</td>
                             <td style="padding-right: 10px;">{{pool.poolFeePercent}}%</td>
-                            <td style="padding-right: 10px;" v-bind="checkEffort(pool.coin.family,pool.poolEffort, pool.coin.name)">{{PoolEffort}}</td>
+                            <td style="padding-right: 10px;" v-bind="checkEffort(pool.coin.family,pool.poolEffort, pool.coin.name)"></td>
                             <td style="padding-right: 10px;">{{ formatHashrate(pool.totalPaid,3,"") }} [{{ pool.coin.symbol }}]</td>
                             <td style="padding-right: 10px;">{{ pool.networkStats.connectedPeers }}</td>
                             
@@ -219,7 +219,7 @@
             var sMinutes = minutes > 0 ? ((years > 0 || months > 0 || weeks > 0 || days > 0 || hours > 0) ? " " : "") + minutes + (minutes == 1 ? "m" : "m") : "";
             var sSeconds = seconds > 0 ? ((years > 0 || months > 0 || weeks > 0 || days > 0 || hours > 0 || minutes > 0) ? " " : "") + seconds + (seconds == 1 ? "s" : "s") : ((years < 1 && months < 1 && weeks < 1 && days < 1 && hours < 1 && minutes < 1 ) ? " Few milliseconds" : "");
             if (seconds > 0) return sYears + sMonths + sWeeks + sDays + sHours + sMinutes + sSeconds;
-            else return "&#8734;";
+            else return 'unknown';
         }
         function checkEffort(family, poolEffort, coinName) {
             if (family == "alephium") {

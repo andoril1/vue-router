@@ -14,6 +14,7 @@
                             <th id="three">[Net-Diff]</th>
                             <th id="four">[Reward]</th>
                             <th id="five">[Block Status]</th>
+                            <th id="six">[Block Progress]</th>
                         </tr>
                         <tr v-for="block in blocks" :key="block.id">
                             <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span><hr></td>
@@ -22,6 +23,7 @@
                             <td style="padding-right: 10px;">{{ formatHashrate(block.networkDifficulty,1, "") }}<hr></td>
                             <td style="padding-right: 10px;">{{ block.reward }}<hr></td>
                             <td style="padding-right: 10px;">{{ block.status }} <a :href="block.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><hr></td>     
+                            <td style="padding-right: 10px;">{{ formatHashrate(block.confirmationProgress * 100, 2, '%') }}<hr></td>
                         </tr>
                     </table>
                     </span>
