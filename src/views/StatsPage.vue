@@ -16,8 +16,8 @@
                         <td style="padding-right: 10px;">{{ pools.pool.networkStats.blockHeight }}</td>
                         <td style="padding-right: 10px;">{{ filterPending.length }}</td>
                         <td style="padding-right: 10px;">{{ pools.pool.totalBlocks }}</td>
-                        <td style="padding-right: 10px;">${{formatHashrate(coinPrice.lastPrice,7,"") }}</td>
-                        <td style="padding-right: 10px;">{{setSymbol(pools.pool.coin.symbol)}}${{formatHashrate(coinPrice.lastPrice * blocks[14].reward,4,"")}}</td>
+                        <td style="padding-right: 10px;">${{formatHashrate(coinPrice,7,"") }}</td>
+                        <td style="padding-right: 10px;">${{formatHashrate(coinPrice * blocks[14].reward,4,"")}}</td>
                         <td style="padding-right: 10px;">{{ formatHashrate(blocks[14].reward,1,pools.pool.coin.symbol) }}</td>
                     </tr>
                     <br>
@@ -47,7 +47,7 @@
   
   <script>
   import axios from 'axios'
-  import {ref,computed, watch, onBeforeUpdate} from 'vue'
+  import {ref,computed, watch} from 'vue'
   import {useRoute} from 'vue-router'
   import agChart from '@/components/eChart.vue'
     export default {
@@ -59,77 +59,66 @@
           const pools = ref([]);
           const blocks = ref([]);
           const coinPrice = ref({});
-          let coinSymbol = ref("");
-          let PoolEffort = ref("")
+          let PoolEffort = ref("");
           const route = useRoute();
           const id = ref(route.params.id);
+
+          watch(blocks,(newValue,oldValue) => { 
+            if(newValue != oldValue) {
+                setTimeout(() => {
+                    updateData()
+                }, 60000);
+            }});
+
+        function updateData() {            
+            getPools()
+            getBlocks()
+        }
+
           function getPools() {
               axios
               .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
-                  pools.value =response.data
-                  //console.log(pools.value)
+                    pools.value =response.data
+                    console.log("Returned Pools: ", pools.value)
+                    setPrice(pools.value.pool.coin.symbol)
               })
               .catch((error) => {
-                  console.log(error)
+                    console.warn("getPools error: ", error)
               })
-          }           
-
-          watch(pools,(newValue,oldValue) => { 
-            if(newValue != oldValue) {
-                setTimeout(() => {
-                    getPools()
-                }, 60000);
-        }});
+          }
           
-          watch(blocks,(newValue,oldValue) => { 
-              if(newValue != oldValue) {
-                  setTimeout(() => {
-                      getBlocks()
-                  }, 60000);
-          }});
-          watch(coinSymbol,(newValue,oldValue) => { 
-              if(newValue != oldValue) {
-                console.log('changed')
-                getPrice()
-          }});
+          function setPrice(ticker) {
+            console.log("Getting price for : " + ticker)
+            console.log(ticker)
+            axios.get('https://api.xeggex.com/api/v2/market/getbysymbol/' + ticker + '%2FUSDT')
+                .then((response) => {
+                    //set coin price
+                    coinPrice.value = response.data.lastPrice
+                    console.log("Returned coin price: ", coinPrice.value)
+                })
+                .catch((error) => {
+                    console.warn("getPrice error: ", error)
+                    //if price does not exist.
+                    coinPrice.value = 0;
+                }
+            )                      
+        }
+        
           function getBlocks() {
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
             .then((response) => {
                 blocks.value =response.data
-                //console.log(response.data)
+                console.log("Returned Blocks: ", response.data)
 
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getBlocks error: ", error)
             })
             
         }
-          function getPrice() {
-            console.log(coinSymbol)
-                
-            axios
-            .get('https://api.xeggex.com/api/v2/market/getbysymbol/' + coinSymbol + '%2FUSDT')
-            .then((response) => {
-                coinPrice.value =response.data
-                console.log(coinPrice.value)
-
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-
-            }
-            
-          function setSymbol(symbol){
-                coinSymbol = symbol
-                console.log(coinSymbol)
-                if(!coinPrice.lastPrice){
-                    getPrice()
-                }  
-                return coinSymbol   
-          }
+        
           const filterPending = computed(function() {
                 //show if PPLNS - Button is pressed
                 return blocks.value.filter((block) => block.status=='pending')
@@ -265,19 +254,18 @@
         }
           return{
             getPools,
+            updateData,
             pools,
             blocks,
             coinPrice,
             filterPending,
             id,
-            coinSymbol,
             formatHashrate,
             getBlocks,
-            getPrice,
+            setPrice,
             renderTimeAgoBox,
             getTimeAgoAdmin,
             readableSeconds,
-            setSymbol,
             checkEffort
           }
           
@@ -286,7 +274,6 @@
       mounted() {
           this.getPools();
           this.getBlocks();
-          //this.getPrice();
       },
     
     }
