@@ -4,26 +4,27 @@
         <div class="col-auto" v-for="pool in pools" :key="pool.id">
             <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
-                        <h2>Blocks found by Pool - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h2>
-                        <hr>
+                        <br>
+                        <h5>Blocks found by Pool - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h5>
                         <table>
                         <tr>
-                            <th id="time">[Time]</th>
-                            <th id="one">[Mining Adress]</th>
-                            <th id="two">[Height]</th>
-                            <th id="three">[Net-Diff]</th>
-                            <th id="four">[Reward]</th>
-                            <th id="five">[Block Status]</th>
-                            <th id="six">[Block Progress]</th>
+                            <th id="time">Time</th>
+                            <th id="one">Mining Adress</th>
+                            <th id="two">Height</th>
+                            <th id="three">Net-Diff</th>
+                            <th id="four">Reward</th>
+                            <th id="five">Status</th>
+                            <th id="six">Progress</th>
                         </tr>
                         <tr v-for="block in blocks" :key="block.id">
-                            <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span><hr></td>
-                            <td style="padding-right: 10px;">[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]<hr></td>
-                            <td style="padding-right: 10px;">{{ block.blockHeight }}<hr></td>
-                            <td style="padding-right: 10px;">{{ formatHashrate(block.networkDifficulty,1, "") }}<hr></td>
-                            <td style="padding-right: 10px;">{{ block.reward }}<hr></td>
-                            <td style="padding-right: 10px;">{{ block.status }} <a :href="block.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><hr></td>     
-                            <td style="padding-right: 10px;">{{ formatHashrate(block.confirmationProgress * 100, 2, '%') }}<hr></td>
+                            <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
+                            <td style="padding-right: 10px;"><a :href="pool.addressInfoLink.replace(pool.address, block.miner)" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]</td>
+                            <td style="padding-right: 10px;">{{ block.blockHeight }}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(block.networkDifficulty,2, "") }}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(block.reward,1,"") }} {{pool.coin.symbol}}</td>
+                            <td style="padding-right: 10px;" v-if="block.confirmationProgress * 100 > 0"><a :href="block.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ block.status }}</td> 
+                            <td style="padding-right: 10px;" v-if="block.confirmationProgress * 100 <= 0"><a :href="block.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ ' new ' }}</td>    
+                            <td style="padding-right: 10px;">{{ formatHashrate(block.confirmationProgress * 100, 2, '%') }}</td>
                         </tr>
                     </table>
                     </span>
@@ -35,7 +36,7 @@
   
   <script>
   import axios from 'axios'
-  import {ref,computed} from 'vue'
+  import {ref,computed,watch} from 'vue'
   import {useRoute} from 'vue-router'
     export default {
       setup(){
@@ -69,8 +70,13 @@
             .catch((error) => {
                 console.log(error)
             })
-            
         }
+        watch(blocks,(newValue,oldValue) => { 
+              if(newValue != oldValue) {
+                  setTimeout(() => {
+                      getBlocks()
+                  }, 60000);
+          }});
           const filterCreated = computed(function() {
                   //show if PPLNS - Button is pressed
                   return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
@@ -173,5 +179,7 @@
   </script>
   
   <style>
-  
+  table, th, td {
+    border-bottom: 1px solid #ddd;
+  }
   </style>

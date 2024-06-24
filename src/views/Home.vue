@@ -19,18 +19,54 @@
         <div class="col-auto" v-for="pool in selectedScheme" :key="pool.id">
             <div class="info-box bg-yellow-gradient">
                 <router-link :to="{ name: 'Connect', params: { id: pool.id } }" style="text-decoration: none; color: azure;"> 
-                <span class="info-box-text">
-                    <img class="coinimg" :src="`./src/assets/img/coin/icon/${pool.coin.symbol.toLowerCase()}.png`" style="height: 25px; width: 25px;">
-                    {{paymentScheme(pool.coin.name,pool.paymentProcessing.payoutScheme)}}<br>Ticker:{{ pool.coin.symbol }}
-                <br>Algo: {{ pool.coin.algorithm }}<br>Pool Fee: {{pool.poolFeePercent}}%
-                <br>PaymentScheme: {{ pool.paymentProcessing.payoutScheme }}<br>Minimum Pay: {{ pool.paymentProcessing.minimumPayment }}
-                <br>Miners: {{ pool.poolStats.connectedMiners }}<br>Pool Hash: {{ formatHashrate(pool.poolStats.poolHashrate,2,"H/s") }}
-                <br>Dominance : {{ formatHashrate(pool.poolStats.poolHashrate / pool.networkStats.networkHashrate,5,"%") }}<br>
-                Net Hash: {{ formatHashrate(pool.networkStats.networkHashrate, 2, "H/s") }}<br>
-                Difficulty: {{ formatHashrate(pool.networkStats.networkDifficulty, 2,"") }}<br>
-                BlockHeight: {{ pool.networkStats.blockHeight }}<br>
-                Last Block:  <span v-html="renderTimeAgoBox(pool.lastPoolBlockTime)"></span>
-                </span>
+                    <span class="info-box-text">
+                        <br>
+                        <img class="coinimg" :src="`./src/assets/img/coin/icon/${pool.coin.symbol.toLowerCase()}.png`" style="height: 25px; width: 25px;">
+                        {{paymentScheme(pool.coin.name,pool.paymentProcessing.payoutScheme)}} [{{ pool.coin.symbol }}]
+                        <hr>
+                        <table>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Algo:</th>
+                                <td style="text-align: right;">{{ pool.coin.algorithm }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Miners:</th>
+                                <td style="text-align: right;">{{ pool.poolStats.connectedMiners }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Pool Fee:</th>
+                                <td style="text-align: right;">{{pool.poolFeePercent}}%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Threshold:</th>
+                                <td style="text-align: right;">{{ pool.paymentProcessing.minimumPayment }} {{pool.coin.symbol}}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Pool Hash:</th>
+                                <td style="text-align: right;">{{ formatHashrate(pool.poolStats.poolHashrate,2,"H/s") }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Dominance:</th>
+                                <td style="text-align: right;">{{ formatHashrate(pool.poolStats.poolHashrate / pool.networkStats.networkHashrate,5,"%") }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Net Hash:</th>
+                                <td style="text-align: right;">{{ formatHashrate(pool.networkStats.networkHashrate, 2, "H/s") }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Net Diff:</th>
+                                <td style="text-align: right;">{{ formatHashrate(pool.networkStats.networkDifficulty, 2, "") }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <th style="text-align: left;">Block Height:</th>
+                                <td style="text-align: right;">{{ pool.networkStats.blockHeight }}</td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left;">Last Block:</th>
+                                <td style="text-align: right;"><span v-html="renderTimeAgoBox(pool.lastPoolBlockTime)"></span></td>
+                            </tr>
+                        </table>
+                    </span>
                 </router-link>
             </div>
         </div>

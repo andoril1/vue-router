@@ -4,23 +4,21 @@
       <div class="col-auto" v-for="pool in pools" :key="pool.id">
           <div class="info-box bg-yellow-gradient">
                   <span class="info-box-text">
-                      <h2>Payments to Miners - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h2>
-                      <hr>
-                      <table>
-                      <tr>
-                          <th id="time">[Time]</th>
-                          <th id="one">[Mining Adress]</th>
-                          <th id="two">[Amount]</th>
-                          <th id="three">[Confirmation]</th>
-                      </tr>
-                      <tr v-for="block in blocks" :key="block.id">
-                          <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
-                          <td style="padding-right: 10px;"><a :href="block.addressInfoLink" target="_blank">[{{block.address.substring(0, 8)}}...{{ block.address.substring(block.address.length - 8) }}]</a></td>
-                          <td style="padding-right: 10px;">{{ formatHashrate(block.amount,2,"") }} {{pool.coin.symbol}}</td>
-                          <td style="padding-right: 10px;"><a :href="block.transactionInfoLink" target="_blank">{{ block.transactionConfirmationData.substring(0, 8)}}...{{block.transactionConfirmationData.substring(block.transactionConfirmationData.length - 8) }}]</a></td>
-                      </tr>
-                  </table>
-                  
+                        <h5>Payments to Miners - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h5>
+                        <table>
+                            <tr>
+                                <th id="time">[Time]</th>
+                                <th id="one">[Mining Adress]</th>
+                                <th id="two">[Amount]</th>
+                                <th id="three">[Confirmation]</th>
+                            </tr>
+                            <tr v-for="block in blocks" :key="block.id">
+                                <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
+                                <td style="padding-right: 10px;"><a :href="block.addressInfoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{block.address.substring(0, 8)}}...{{ block.address.substring(block.address.length - 8) }}]</td>
+                                <td style="padding-right: 10px;">{{ formatHashrate(block.amount,2,"") }} {{pool.coin.symbol}}</td>
+                                <td style="padding-right: 10px;"><a :href="block.transactionInfoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{ block.transactionConfirmationData.substring(0, 8)}}...{{block.transactionConfirmationData.substring(block.transactionConfirmationData.length - 8) }}]</td>
+                            </tr>
+                        </table>
                   </span>
               </div>
           </div>
@@ -172,5 +170,7 @@ import {useRoute} from 'vue-router'
 </script>
 
 <style>
-  
+    table, th, td {
+        border-bottom: 1px solid #ddd;
+    }
 </style>

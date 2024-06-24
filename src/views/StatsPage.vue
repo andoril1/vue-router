@@ -1,45 +1,49 @@
 <template>
   <div class="row justify-content-center">
-    <div class="col-auto" v-for="pool in pools" :key="pool.id">
+    <div class="col-auto">
         <div class="info-box bg-yellow-gradient">
-          <table style="margin: auto;">
+          <table style="margin: auto;" v-if="pools.pool">
+                        <br>
                         <tr>
                             <th id="time" style="padding-right: 10px;">[BlockChain]<br>[Height]</th>
                             <th id="time" style="padding-right: 10px;">[Pending]<br>[Blocks]</th>
                             <th id="time" style="padding-right: 10px;">[Confirmed]<br>[Blocks]</th>
-                            <th id="time" style="padding-right: 10px;">[Block]<br>[Value]</th>
-                            <th id="time" style="padding-right: 10px;">[Pool]<br>[TTF]</th>
+                            <th id="time" style="padding-right: 10px;">[Coin]<br>[Price]</th>
+                            <th id="time" style="padding-right: 10px;">[Block]<br>[Value]</th> 
                             <th id="time" style="padding-right: 10px;">[Block]<br>[Reward]</th>
                         </tr>
                         <tr>
-                            <td style="padding-right: 10px;">{{ pool.networkStats.blockHeight }}</td>
+                            <td style="padding-right: 10px;">{{ pools.pool.networkStats.blockHeight }}</td>
                             <td style="padding-right: 10px;">{{ filterPending.length }}</td>
-                            <td style="padding-right: 10px;">{{ pool.totalBlocks }}</td>
-                            <!--<div v-for="price in getPrice(pool.coin.symbol)" :key="price.id"></div>-->
-                            <td style="padding-right: 10px;">{{setSymbol(pool.coin.symbol)}}${{formatHashrate(coinPrice.lastPrice * blocks[14].reward,4,"")}}</td>
-                            <td style="padding-right: 10px;">{{readableSeconds(pool.networkStats.networkHashrate / pool.poolStats.poolHashrate * pool.blockRefreshInterval) }}</td>
-                            <td style="padding-right: 10px;">{{ blocks[14].reward }}</td>
+                            <td style="padding-right: 10px;">{{ pools.pool.totalBlocks }}</td>
+                            <td style="padding-right: 10px;">${{formatHashrate(coinPrice.lastPrice,7,"") }}</td>
+                            <td style="padding-right: 10px;">{{setSymbol(pools.pool.coin.symbol)}}${{formatHashrate(coinPrice.lastPrice * blocks[14].reward,4,"")}}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(blocks[14].reward,1,pools.pool.coin.symbol) }}</td>
                         </tr>
                         <br>
                         <tr>
+                            <th id="time" style="padding-right: 10px;">[Connected]<br>[Peers]</th>
                             <th id="time" style="padding-right: 10px;">[Payment]<br>[Threshold]</th>
                             <th id="time" style="padding-right: 10px;">[Pool]<br>[Fee]</th>
                             <th id="time" style="padding-right: 10px;">[Pool]<br>[Effort]</th>
+                            <th id="time" style="padding-right: 10px;">[Pool]<br>[TTF]</th>
                             <th id="time" style="padding-right: 10px;">[Total]<br>[Paid]</th>
-                            <th id="time" style="padding-right: 10px;">[Connected]<br>[Peers]</th>
                         </tr>
                         <tr>
-                            <td style="padding-right: 10px;">{{ pool.paymentProcessing.minimumPayment }} {{ pool.coin.symbol }}</td>
-                            <td style="padding-right: 10px;">{{pool.poolFeePercent}}%</td>
-                            <td style="padding-right: 10px;" v-bind="checkEffort(pool.coin.family,pool.poolEffort, pool.coin.name)"></td>
-                            <td style="padding-right: 10px;">{{ formatHashrate(pool.totalPaid,3,"") }} [{{ pool.coin.symbol }}]</td>
-                            <td style="padding-right: 10px;">{{ pool.networkStats.connectedPeers }}</td>
-                            
+                            <td style="padding-right: 10px;">{{ pools.pool.networkStats.connectedPeers }}</td>
+                            <td style="padding-right: 10px;">{{ pools.pool.paymentProcessing.minimumPayment }} {{ pools.pool.coin.symbol }}</td>
+                            <td style="padding-right: 10px;">{{pools.pool.poolFeePercent}}%</td>
+                            <td style="padding-right: 10px;" v-bind="checkEffort(pools.pool.coin.family,pools.pool.poolEffort, pools.pool.coin.name)"></td>
+                            <td style="padding-right: 10px;">{{readableSeconds(pools.pool.networkStats.networkHashrate / pools.pool.poolStats.poolHashrate * pools.pool.blockRefreshInterval) }}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(pools.pool.totalPaid,3,"") }} [{{ pools.pool.coin.symbol }}]</td>
                         </tr>
+                        <br>
                     </table>
                     </div>
         </div>
+        <h5 v-if="pools.pool">{{pools.pool.coin.symbol}}</h5>
         <agChart />
+        
   </div>
 
 </template>
@@ -67,7 +71,8 @@
               .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
                   pools.value =response.data
-                  console.log(pools.value)
+                  //console.log(pools.value)
+                  getPrice()
               })
               .catch((error) => {
                   console.log(error)
@@ -92,9 +97,6 @@
                 console.log('changed')
                 getPrice(coinSymbol)
           }});
-          setTimeout(() => {
-                    getPrice(coinSymbol)
-                  }, 60000);
           function getBlocks() {
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
@@ -108,19 +110,24 @@
             })
             
         }
-          function getPrice(ticker) {
-            console.log(ticker)
-            axios
-            .get('https://api.xeggex.com/api/v2/market/getbysymbol/' + ticker + '%2FUSDT')
-            .then((response) => {
-                coinPrice.value =response.data
-                //console.log(coinPrice.value)
+          function getPrice() {
+            console.log(pools.pool)
+            if(pools.pool){
+                console.log(ticker)
+                axios
+                .get('https://api.xeggex.com/api/v2/market/getbysymbol/' + pools.pool.coin.symbol + '%2FUSDT')
+                .then((response) => {
+                    coinPrice.value =response.data
+                    console.log(coinPrice.value)
 
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
           }
+
+            }
+            
           function setSymbol(symbol){
                 coinSymbol = symbol
                 //console.log(coinSymbol)
@@ -282,6 +289,7 @@
       mounted() {
           this.getPools();
           this.getBlocks();
+          //this.getPrice();
       },
     
     }

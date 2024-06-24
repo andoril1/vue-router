@@ -4,8 +4,7 @@
         <div class="col-auto" v-for="pool in pools" :key="pool.id">
             <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
-                        <h4>Connect your miner for {{ pool.coin.name }}</h4>
-                        <hr>
+                        <h5>Connect your miner for {{ pool.coin.name }}</h5>
                         <table style="margin: auto;">
                         <tr>
                             <th id="time">[Coin]</th>
@@ -18,14 +17,14 @@
                         <tr>
                             <td style="padding-right: 10px;">{{ pool.coin.name }}</td>
                             <td style="padding-right: 10px;">{{ pool.coin.algorithm }}</td>
-                            <td style="padding-right: 10px;" v-if="pool.coin.website"><a :href="pool.coin.website">{{ pool.coin.website }}</a></td>
-                            <td style="padding-right: 10px;" v-if="pool.coin.github"><a :href="pool.coin.github">{{ pool.coin.github }}</a></td>
+                            <td style="padding-right: 10px;" v-if="pool.coin.website"><a :href="pool.coin.website"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ pool.coin.website.replace('https://', "") }}</td>
+                            <td style="padding-right: 10px;" v-if="pool.coin.github"><a :href="pool.coin.github"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ pool.coin.github.replace('https://' , "") }}</td>
                             <td style="padding-right: 10px;">{{ pool.paymentProcessing.payoutScheme }}</td>
                             <td style="padding-right: 10px;">{{pool.poolFeePercent}}%</td>
                             
                         </tr>
                     </table>
-                        <hr>
+                    <br>
                         <table style="margin: auto;">
                             
                         <tr>
@@ -38,13 +37,13 @@
                             <td style="padding-right: 10px;">
                                 <h6><button @click="copyMe('stratum+tcp://eu.flazzard.com:', id)" style="background-color: transparent; padding: 0px;">
                                 <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button>
-                                stratum+tcp://eu.flazzard.com:{{ id }}</h6><hr>
+                                stratum+tcp://eu.flazzard.com:{{ id }}</h6>
                             </td>
-                            <td style="padding-right: 10px;">[{{ value.name }}]<br>[Var Diff]<br>{{ value.varDiff.minDiff }} &harr; &infin;<hr></td>
+                            <td style="padding-right: 10px;">[{{ value.name }}]<br>[Var Diff]<br>{{ value.varDiff.minDiff }} &harr; &infin;</td>
                             <td style="padding-right: 10px;">
                                 <h6>stratum+tcp://na.flazzard.com:{{ id }}
                                 <button @click="copyMe('stratum+tcp://na.flazzard.com:', id)" style="background-color: transparent; padding: 0px;">
-                                <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button></h6><hr>
+                                <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button></h6>
                             </td>
                             
                         </tr>
@@ -188,5 +187,7 @@ import {useRoute} from 'vue-router'
   </script>
   
   <style>
-    
+  table, th, td {
+    border-bottom: 1px solid #ddd;
+    }
   </style>

@@ -7,7 +7,7 @@
                         <h5>Your Dashboard - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h5>
                         <hr>
                         <h5>{{headerText}}</h5>
-                        <input v-model="walletAddress" type="input" style="width: 300px" id="walletAddress"><input type="submit" @click="checkWallet(pool.id)" autocomplete="on">
+                        <input v-model="walletAddress" type="input" style="width: 85%" id="walletAddress"><input type="submit" @click="checkWallet(pool.id)" autocomplete="on" class="btn btn-info btn-fill btn-sm">
                         <div v-if="blocks">
                             <table style="margin: auto;">
                                 <tr>
@@ -53,32 +53,32 @@
                                     <div v-if="buttonString == 'blocks'">
                                         <tr>
                                             <th id="time">[Time]</th>
-                                            <th id="one">[Mining Adress]</th>
                                             <th id="two">[Height]</th>
                                             <th id="three">[Net-Diff]</th>
+                                            <th id="four">[Effort]</th>
                                             <th id="four">[Reward]</th>
                                             <th id="five">[Block Status]</th>
+                                            <th id="six">[Block Progress]</th>
                                         </tr>
                                         
                                         <tr v-for="minerBlock in minerBlocks" :key="minerBlock.id">
                                             <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(minerBlock.created)"></span><hr></td>
-                                            <td style="padding-right: 10px;">[{{minerBlock.miner.substring(0, 8)}}...{{ minerBlock.miner.substring(minerBlock.miner.length - 8) }}]<hr></td>
                                             <td style="padding-right: 10px;">{{minerBlock.blockHeight}}<hr></td>
                                             <td style="padding-right: 10px;">{{ formatHashrate(minerBlock.networkDifficulty,1, "") }}<hr></td>
+                                            <td style="padding-right: 10px;">coming soon...<hr></td>
                                             <td style="padding-right: 10px;">{{minerBlock.reward}}<hr></td>
-                                            <td style="padding-right: 10px;">{{minerBlock.status}} <a :href="minerBlock.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><hr></td>     
+                                            <td style="padding-right: 10px;">{{minerBlock.status}} <a :href="minerBlock.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a><hr></td>
+                                            <td style="padding-right: 10px;">{{ formatHashrate(minerBlock.confirmationProgress * 100, 2, '%') }}<hr></td>     
                                         </tr>
                                     </div>
                                     <div v-if="buttonString == 'payment'">
                                         <tr>
                                             <th id="time">[Time]</th>
-                                            <th id="one">[Mining Adress]</th>
                                             <th id="two">[Amount]</th>
                                             <th id="three">[Confirmation]</th>
                                         </tr>
                                         <tr v-for="minerPayment in minerPay" :key="minerPayment.id">
                                             <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(minerPayment.created)"></span><hr></td>
-                                            <td style="padding-right: 10px;">[{{minerPayment.address.substring(0, 8)}}...{{ minerPayment.address.substring(minerPayment.address.length - 8) }}]<hr></td>
                                             <td style="padding-right: 10px;">{{formatHashrate(minerPayment.amount,2,"")}}<hr></td>
                                             <td style="padding-right: 10px;"><a :href="minerPayment.transactionInfoLink" target="_blank">{{minerPayment.transactionConfirmationData.substring(0, 8)}}...{{minerPayment.transactionConfirmationData.substring(minerPayment.transactionConfirmationData.length - 8) }}]</a><hr></td>
                                             
@@ -92,7 +92,7 @@
                                             </tr>
                                             <tr v-for="(_id,value) in minerPerformance[minerPerformance.length -1].workers" :key="_id">
                                                 <td style="padding-right: 10px;">[{{ value }}]<hr></td>
-                                                <td style="padding-right: 10px;" v-bind="minerHashrate=_id.hashrate">{{formatHashrate(_id.hashrate,2,"H/s")}}<hr></td>
+                                                <td style="padding-right: 10px;">{{formatHashrate(_id.hashrate,2,"H/s")}}<hr></td>
                                                 <td style="padding-right: 10px;">{{formatHashrate(_id.sharesPerSecond, 2,"S/s")}}<hr></td>
                                             </tr>
                                     </div>
@@ -111,7 +111,7 @@
                                         <tr>
                                             <td style="padding-right: 10px;"><input v-model="ipAddress" type="input" style="width: 120px" id="ipAddress"></td>
                                             <td style="padding-right: 10px;"><input v-model="thresholdAmount" type="input" style="width: 120px" id="thresholdAmount"></td>
-                                            <input type="submit" autocomplete="on">
+                                            <input type="submit" autocomplete="on" class="btn btn-info btn-fill btn-sm" @click="setMinerThreshold()">
                                         </tr>
                                     </div>
                                 </table> 
@@ -143,7 +143,13 @@ import {useRoute} from 'vue-router'
         const ipAddress = ref("");
         const thresholdAmount = ref(""); 
         const buttonString =ref("blocks");
-        let headerText =ref("Please input your address to load stats")
+        let headerText =ref("Please input your address to load stats");
+        const requestBody = {
+            settings: {
+                PaymentThreshold: thresholdAmount.value
+            },
+            ipAddress: ipAddress.value
+        };
 
         function getPools() {
             axios
@@ -196,7 +202,7 @@ import {useRoute} from 'vue-router'
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/performance' )
             .then((response) => {
                 minerPerformance.value =response.data
-                console.log(minerPerformance.value)
+                //console.log(minerPerformance.value)
             })
             .catch((error) => {
                 console.log(error)
@@ -207,7 +213,7 @@ import {useRoute} from 'vue-router'
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/settings' )
             .then((response) => {
                 minerSettings.value =response.data
-                console.log(minerSettings.value)
+                //console.log(minerSettings.value)
             })
             .catch((error) => {
                 console.log(error)
@@ -215,9 +221,14 @@ import {useRoute} from 'vue-router'
         }
         function setMinerThreshold() {
             axios
-            .post('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/settings', {paymentThreshold: thresholdAmount, ipAddress: ipAddress} )
+            .post('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/settings', 
+            {settings: {
+                PaymentThreshold: thresholdAmount.value
+            },
+            ipAddress: ipAddress.value })
             .then((response) => {
                 console.log('Response:', response.data)
+                getMinerSettings()
             })
             .catch((error) => {
                 console.log('Error:', error)
@@ -231,7 +242,7 @@ import {useRoute} from 'vue-router'
         }});
         watch(buttonString,(newValue,oldValue) => { 
             if(newValue != oldValue) {
-                console.log(buttonString)
+                //console.log(buttonString)
         }});
         watch(headerText,(newValue,oldValue) => { 
             if(newValue != oldValue) {
@@ -371,7 +382,8 @@ import {useRoute} from 'vue-router'
           ipAddress,
           filterCreated,
           filterPending,
-          id
+          id,
+          requestBody
         }
         
 

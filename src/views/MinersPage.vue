@@ -5,17 +5,17 @@
                 <span class="info-box-text">
                     <h3>Our Top Miners for {{ pool.coin.name }}[{{ pool.coin.symbol }}]</h3>
                     <hr>
-                    <table>
-                        <tr>
+                    <table style="margin: auto">
+                        <tr v-if="pool.topMiners[0]">
                             <th id="left">Miner Adress:</th>
                             <th id="center">Hashrate</th>
                             <th id="right">Shares Per Second</th>
                         </tr>
+                        <h5 v-else>No miners available</h5>
                         <tr v-for="(value,id) in pool.topMiners" :key="id">
-                            <td style="padding-right: 10px;"><a :href="pool.addressInfoLink.replace(pool.address, value.miner)" target="_blank">[{{value.miner.substring(0, 8)}}...{{ value.miner.substring(value.miner.length - 8) }}]</a></td>
+                            <td style="padding-right: 10px;"><a :href="pool.addressInfoLink.replace(pool.address, value.miner)" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{value.miner.substring(0, 8)}}...{{ value.miner.substring(value.miner.length - 8) }}]</td>
                             <td style="width:90%">{{ formatHashrate(value.hashrate,2,"H/s") }}</td>
                             <td style="white-space: nowrap">{{ formatHashrate(value.sharesPerSecond,2,"") }} {{ pool.coin.explorer }}</td>
-                          
                           </tr>
                     </table>
                 </span>
@@ -93,15 +93,18 @@
     </script>
   
   <style>
-.column {
-  float: left;
-  width: 50%;
-}
+    .column {
+      float: left;
+      width: 50%;
+    }
 
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    table, th, td {
+      border-bottom: 1px solid #ddd;
+    }
   </style>
