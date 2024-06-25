@@ -1,11 +1,11 @@
 <template>
     <div class="container">
       <div class="row d-flex justify-content-center">
-        <div class="col-auto" v-for="pool in pools" :key="pool.id">
+        <div class="col-auto" v-if="pools.pool">
             <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
                         <br>
-                        <h5>Blocks found by Pool - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h5>
+                        <h5>Blocks found by Pool - {{ pools.pool.coin.name }} [{{ pools.pool.coin.symbol }}]</h5>
                         <table>
                         <tr>
                             <th id="time">Time</th>
@@ -18,10 +18,10 @@
                         </tr>
                         <tr v-for="block in blocks" :key="block.id">
                             <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
-                            <td style="padding-right: 10px;"><a :href="pool.addressInfoLink.replace(pool.address, block.miner)" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]</td>
+                            <td style="padding-right: 10px;"><a :href="pools.pool.addressInfoLink.replace(pools.pool.address, block.miner)" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{block.miner.substring(0, 8)}}...{{ block.miner.substring(block.miner.length - 8) }}]</td>
                             <td style="padding-right: 10px;">{{ block.blockHeight }}</td>
                             <td style="padding-right: 10px;">{{ formatHashrate(block.networkDifficulty,2, "") }}</td>
-                            <td style="padding-right: 10px;">{{ formatHashrate(block.reward,1,"") }} {{pool.coin.symbol}}</td>
+                            <td style="padding-right: 10px;">{{ formatHashrate(block.reward,1,"") }} {{pools.pool.coin.symbol}}</td>
                             <td style="padding-right: 10px;" v-if="block.confirmationProgress * 100 > 0"><a :href="block.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ block.status }}</td> 
                             <td style="padding-right: 10px;" v-if="block.confirmationProgress * 100 <= 0"><a :href="block.infoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ ' new ' }}</td>    
                             <td style="padding-right: 10px;">{{ formatHashrate(block.confirmationProgress * 100, 2, '%') }}</td>
@@ -51,7 +51,7 @@
               .then((response) => {
                   //console.log(response.data.pools)
                   pools.value =response.data
-                  //console.log(response.data.pools)
+                  console.log("Returned Pools: ", pools.value)
               })
               .catch((error) => {
                   console.log(error)
@@ -62,13 +62,12 @@
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
             .then((response) => {
-                //console.log(response.data.pools)
                 blocks.value =response.data
-                console.log(response.data)
+                console.log("Returned Blocks: ", response.data)
 
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getBlocks error: ", error)
             })
         }
         watch(blocks,(newValue,oldValue) => { 
@@ -77,10 +76,6 @@
                       getBlocks()
                   }, 60000);
           }});
-          const filterCreated = computed(function() {
-                  //show if PPLNS - Button is pressed
-                  return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
-          });
           const filterPending = computed(function() {
                   //show if PPLNS - Button is pressed
                   return blocks.value.filter((block) => block.status=='pending')
@@ -159,7 +154,6 @@
             getPools,
             pools,
             blocks,
-            filterCreated,
             filterPending,
             id,
             formatHashrate,

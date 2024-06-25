@@ -32,8 +32,8 @@
                     <tr>
                         <td style="padding-right: 10px;">{{ pools.pool.networkStats.connectedPeers }}</td>
                         <td style="padding-right: 10px;">{{ pools.pool.paymentProcessing.minimumPayment }} {{ pools.pool.coin.symbol }}</td>
-                        <td style="padding-right: 10px;">{{pools.pool.poolFeePercent}}%</td>
-                        <td style="padding-right: 10px;" v-bind="checkEffort(pools.pool.coin.family,pools.pool.poolEffort, pools.pool.coin.name)"></td>
+                        <td style="padding-right: 10px;">{{ pools.pool.poolFeePercent }}%</td>
+                        <td style="padding-right: 10px;">{{ PoolEffort }}</td>
                         <td style="padding-right: 10px;">{{readableSeconds(pools.pool.networkStats.networkHashrate / pools.pool.poolStats.poolHashrate * pools.pool.blockRefreshInterval) }}</td>
                         <td style="padding-right: 10px;">{{ formatHashrate(pools.pool.totalPaid,3,"") }} [{{ pools.pool.coin.symbol }}]</td>
                     </tr>
@@ -59,7 +59,7 @@
           const pools = ref([]);
           const blocks = ref([]);
           const coinPrice = ref({});
-          let PoolEffort = ref("");
+          let PoolEffort = ref(0);
           const route = useRoute();
           const id = ref(route.params.id);
 
@@ -82,6 +82,7 @@
                     pools.value =response.data
                     console.log("Returned Pools: ", pools.value)
                     setPrice(pools.value.pool.coin.symbol)
+                    checkEffort(pools.value.pool.coin.family,pools.value.pool.poolEffort, pools.value.pool.coin.name)
               })
               .catch((error) => {
                     console.warn("getPools error: ", error)
@@ -237,7 +238,7 @@
             } else {
                 PoolEffort = Number(poolEffort) * 100;
             }
-            console.log(PoolEffort)
+           
             var effortClass = "";
             if (PoolEffort >= 500) {
                 effortClass = "effort4";
@@ -251,6 +252,9 @@
             else {
                 effortClass = "effort0";
             }
+            console.log('PoolEffort value', PoolEffort)
+            return PoolEffort
+            
         }
           return{
             getPools,
@@ -260,6 +264,7 @@
             coinPrice,
             filterPending,
             id,
+            PoolEffort,
             formatHashrate,
             getBlocks,
             setPrice,

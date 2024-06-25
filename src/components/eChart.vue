@@ -140,6 +140,27 @@
           },
           {
             type: 'value',
+            name: 'NetHash',
+            //min: 'dataMin',
+            position: 'right',
+            alignTicks: false,
+            nameTextStyle:{
+              color: colors[3],
+              align: 'left'
+            },
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: colors[3]
+              }
+            },
+            axisLabel: {
+              color: colors[3],
+              formatter: '{value} TH'
+            }
+          },
+          {
+            type: 'value',
             name: 'NetDiff',
             //min: 'dataMin',
             position: 'right',
@@ -160,27 +181,6 @@
               formatter: '{value} T'
             }
           },
-          {
-            type: 'value',
-            name: 'NetHash',
-            //min: 'dataMin',
-            position: 'right',
-            alignTicks: false,
-            nameTextStyle:{
-              color: colors[3],
-              align: 'left'
-            },
-            axisLine: {
-              show: true,
-              lineStyle: {
-                color: colors[3]
-              }
-            },
-            axisLabel: {
-              color: colors[3],
-              formatter: '{value} TH'
-            }
-          }
         ],
           grid: [
           {
@@ -267,27 +267,27 @@
      function getReadableHashrate(hash, index) {
           //display in Hash
           if(hash < 1000) {
-            yAxisLabels[index] = ((index == 2) ? 'H' : 'H/s')
+            yAxisLabels[index] = ((index == 3) ? 'H' : 'H/s')
             return hash
           //display in KiloHash
           } else if(hash < 1000000) {
-              yAxisLabels[index] = ((index == 2) ? 'K' : 'KH/s')
+              yAxisLabels[index] = ((index == 3) ? 'K' : 'KH/s')
               return hash/1000
           //display in MegaHash
           } else if(hash < 1000000000) {
-              yAxisLabels[index] = ((index == 2) ? 'M' : 'MH/s')
+              yAxisLabels[index] = ((index == 3) ? 'M' : 'MH/s')
               return hash/1000000
           //display in GigaHash
           } else if(hash < 1000000000000) {
-              yAxisLabels[index] = ((index == 2) ? 'G' : 'GH/s')
+              yAxisLabels[index] = ((index == 3) ? 'G' : 'GH/s')
               return hash/1000000000
           //display in TeraHash
           } else if(hash < 1000000000000000) {
-            yAxisLabels[index] = ((index == 2) ? 'T' : 'TH/s')
+            yAxisLabels[index] = ((index == 3) ? 'T' : 'TH/s')
             return hash/1000000000000
           //display in PetaHash
           } else if(hash < 1000000000000000000) {
-            yAxisLabels[index] = ((index == 2) ? 'P' : 'PH/s')
+            yAxisLabels[index] = ((index == 3) ? 'P' : 'PH/s')
             return hash/1000000000000000
           }
         }
