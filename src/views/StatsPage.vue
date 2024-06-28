@@ -17,8 +17,8 @@
                         <td style="padding-right: 10px;">{{ filterPending.length }}</td>
                         <td style="padding-right: 10px;">{{ pools.pool.totalBlocks }}</td>
                         <td style="padding-right: 10px;">${{formatHashrate(coinPrice,7,"") }}</td>
-                        <td style="padding-right: 10px;">${{formatHashrate(coinPrice * blocks[14].reward,4,"")}}</td>
-                        <td style="padding-right: 10px;">{{ formatHashrate(blocks[14].reward,1,pools.pool.coin.symbol) }}</td>
+                        <td style="padding-right: 10px;">${{formatHashrate(coinPrice * blocks[blocks.length -1].reward,4,"")}}</td>
+                        <td style="padding-right: 10px;">{{ formatHashrate(blocks[blocks.length -1].reward,1,pools.pool.coin.symbol) }}</td>
                     </tr>
                     <br>
                     <tr>
@@ -40,7 +40,7 @@
                     <br>
                 </table>
             </div>
-            <agChart />
+            <eChart />
         </div>  
     </div>
 </template>
@@ -49,10 +49,10 @@
   import axios from 'axios'
   import {ref,computed, watch} from 'vue'
   import {useRoute} from 'vue-router'
-  import agChart from '@/components/eChart.vue'
+  import eChart from '@/components/eChart.vue'
     export default {
       components:{
-        agChart
+        eChart
       },
       setup(){
           

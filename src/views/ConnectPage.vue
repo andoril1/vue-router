@@ -1,28 +1,56 @@
 <template>
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-auto" v-for="pool in pools" :key="pool.id">
+        <div class="col-auto" v-if="pools.pool">
             <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
-                        <h5>Connect your miner for {{ pool.coin.name }}</h5>
+                        <h5>Connect your miner for {{ pools.pool.coin.name }}</h5>
                         <table style="margin: auto;">
                         <tr>
                             <th id="time">[Coin]</th>
                             <th id="one">[Algo]</th>
-                            <th id="two" v-if="pool.coin.website">[Website]</th>
-                            <th id="three" v-if="pool.coin.github">[Github]</th>
+                            <th id="two" v-if="pools.pool.coin.website">[Website]</th>
+                            <th id="three" v-if="pools.pool.coin.github">[Github]</th>
                             <th id="four">[Payout Scheme]</th>
-                            <th id="five">[Pool Fee]</th>
+                            <th id="five">[pools.Pool Fee]</th>
                         </tr>
                         <tr>
-                            <td style="padding-right: 10px;">{{ pool.coin.name }}</td>
-                            <td style="padding-right: 10px;">{{ pool.coin.algorithm }}</td>
-                            <td style="padding-right: 10px;" v-if="pool.coin.website"><a :href="pool.coin.website"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ pool.coin.website.replace('https://', "") }}</td>
-                            <td style="padding-right: 10px;" v-if="pool.coin.github"><a :href="pool.coin.github"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ pool.coin.github.replace('https://' , "") }}</td>
-                            <td style="padding-right: 10px;">{{ pool.paymentProcessing.payoutScheme }}</td>
-                            <td style="padding-right: 10px;">{{pool.poolFeePercent}}%</td>
+                            <td style="padding-right: 10px;">{{ pools.pool.coin.name }}</td>
+                            <td style="padding-right: 10px;">{{ pools.pool.coin.algorithm }}</td>
+                            <td style="padding-right: 10px;" v-if="pools.pool.coin.website"><a :href="pools.pool.coin.website"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ pools.pool.coin.website.replace('https://', "") }}</td>
+                            <td style="padding-right: 10px;" v-if="pools.pool.coin.github"><a :href="pools.pool.coin.github"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>{{ pools.pool.coin.github.replace('https://' , "") }}</td>
+                            <td style="padding-right: 10px;">{{ pools.pool.paymentProcessing.payoutScheme }}</td>
+                            <td style="padding-right: 10px;">{{pools.pool.poolFeePercent}}%</td>
                             
                         </tr>
+                    </table>
+                    <table style="margin:auto">
+                        <tr>
+                            <th>Choose region</th>
+                            <th>Select port</th>
+                            <th>Select OS</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <select v-model="selectedRegion">
+                                    <option>Europe</option>
+                                    <option>North America</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select v-model="selectedPort">
+                                    <option v-for="(value, id) in pools.pool.ports" :key="id">{{value.name}} - VarDiff: {{ value.varDiff.minDiff }} &harr; &infin;</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select v-model="selectedOS">
+                                    <option>HiveOS</option>
+                                    <option>Windows</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <div v-if="selectedRegion == 'Europe'">stratum+tcp://eu.flazzard.com:</div>
+                        <div v-else-if="selectedRegion == 'North America'">stratum+tcp://na.flazzard.com:</div>
                     </table>
                     <br>
                         <table style="margin: auto;">
@@ -32,7 +60,7 @@
                             <th id="time">[Description]</th>
                             <th id="time">[NA]</th>
                         </tr>
-                        <tr v-for="(value, id) in pool.ports" :key="id">
+                        <tr v-for="(value, id) in pools.pool.ports" :key="id">
                            
                             <td style="padding-right: 10px;">
                                 <h6><button @click="copyMe('stratum+tcp://eu.flazzard.com:', id)" style="background-color: transparent; padding: 0px;">
@@ -55,36 +83,97 @@
                         <h3>Miner Configuration</h3>
                         <h2>Getting started</h2>
                         <hr />
-                            To get started mining and use this pool you need the following
+                        <table style="margin:auto">
+                            <h5>Requirements:</h5>
                             <ul>
-                                <li>{{ pool.coin.name }} Wallet address</li>
-                                <li>crypto mining software that supports the {{ pool.coin.name }} coin and algorithm {{ pool.coin.algorithm }}</li>
-                                <li>hardware to run it on. This can be you home PC, mining rig, ASIC miner or cloud mining</li>
-                            </ul>
+                                <li>{{ pools.pool.coin.name }} Wallet address. </li>
+                                <li>Mining software for {{ pools.pool.coin.algorithm }}</li>
+                                <li>Compatible hardware</li>
+                            </ul>        
+                        </table>
+                        <h5>Getting a wallet address:</h5>
+                        <div v-if="pools.pool.coin.github && pools.pool.coin.family == 'kaspa'">
+                            Build wallet from source, or if available you can download a wallet directly from <a :href="pools.pool.coin.github" target="_blank">Github</a>
+                            <br> Follow the instruction on the Github to complete install, if you get stuck don't hesistate to either ask us or in the discord of {{ pools.pool.coin.name }}
+                            <br> Please consider installing the wallet on a virtual machine unless you trust the project completely.
+                            <br> Warning: mining directly to an exchange is not recommended!
+                        </div>
+                        <div v-else-if="pools.pool.coin.family == 'kaspa'">
+                            Build wallet from source, or if available you can download a wallet directly from {{ pools.pool.coin.name }} website or github.
+                            <br> Follow the instruction on the Github to complete install, if you get stuck don't hesistate to either ask us or in the discord of {{ pools.pool.coin.name }}
+                            <br> Please consider installing the wallet on a virtual machine unless you trust the project completely.
+                            <br> Warning: mining directly to an exchange is not recommended!
+                        </div>
+                        <div v-else-if="pools.pool.coin.family != 'kaspa'">
+                            Build wallet from source, or if available you can download a wallet directly from {{ pools.pool.coin.name }} website or github.
+                            <br> Follow the instruction on the Github to complete install, if you get stuck don't hesistate to either ask us or in the discord of {{ pools.pool.coin.name }}
+                            <br> Please consider installing the wallet on a virtual machine unless you trust the project completely.
+                            <br> Warning: mining directly to an exchange is not recommended!
+                        </div>
+                        <hr>
+                        <h5>What miningsoftware to use?</h5>
+                        
+                        <div v-if="pools.pool.coin.algorithm == 'Karlsenhash'">
+                            <h5>HiveOS:</h5>
+                            <table>
+                                <tr>
+                                    <td><img src="./../assets/img/Hiveos_Karlsen1.png" style="width:450px;"></td>
+                                    <td style="text-align:left">
+                                        <ul>
+                                            <li>Add wallet and coin to Hiveos</li>
+                                            <li>Select {{ pools.pool.coin.name }} under Coin in Hiveos</li>
+                                            <li>Select your {{ pools.pool.coin.name }}-wallet</li>
+                                            <li>Set Pool as "Configure in miner".</li>
+                                            <li>Select your miner, we recommend Rigel miner for this coin.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><img src="./../assets/img/Hiveos_Karlsen2.png" style="width:450px;"></td>
+                                    <td style="text-align:left">
+                                        <ul>
+                                            <li>[Hash algorithm] Select Karlsenhash<hr></li>
+                                            <li>[Wallet template] Input %WAL%<hr></li>
+                                            <li>[Pass] Leave empty or write x, If you wish to use a static difficulty, <br>add d=xxxx (replace xxxx with your desired difficulty).<hr></li>
+                                            <li>[WorkerName] put %WORKER_NAME% <br>for the worker name to be displayed in the pool.<hr></li>
+                                            <li>[Pool URL] Put the desired url and port from above.<hr></li>
+                                            <li>[Extra config arguements] Optional,<br> in the example im dualmining zil.<hr></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                            <h5>Windows:</h5>
+                        </div>
+                        <div v-else-if="pools.pool.coin.algorithm == 'Pyrin'">
+                            <h5>HiveOS:</h5>
+                            <img src="./../assets/img/Hiveos_Pyrin1.png" style ="width: 70%">
                             <br>
-                            <h4>{{ pool.coin.name }} Wallet address</h4>
-                            A wallet address is needed to payout you shares mined at this pool server.<br>
-                            When the total mined value is past the payout threshold, we will send your coin to this wallet address.<br>
+                            <img src="./../assets/img/Hiveos_Pyrin2.png" style ="width: 40%">
+                            <h5>Windows:</h5>
+                        </div>
+                        <div v-else-if="pools.pool.coin.algorithm == 'kHeavyHash'">
+                            To mine {{ pools.pool.coin.name }} with GPU's we recommend Rigel, see instructions below:
+                            <h5>HiveOS:</h5>
+                            <img src="./../assets/img/Hiveos_KHeavyHash1.png" style ="width: 70%">
                             <br>
+                            <img src="./../assets/img/Hiveos_KHeavyHash2.png" style ="width: 40%">
+                            <h5>Windows:</h5>
+                        </div>
+                        <div v-else-if="pools.pool.coin.algorithm == 'KawPow'">
+                            <h5>HiveOS:</h5>
+                            <img src="./../assets/img/Hiveos_Kawpow1.png" style ="width: 70%">
                             <br>
-                            <h4>crypto mining software</h4>
-                            To mine at this pool you can use any miner supporting the {{ pool.coin.algorithm }} algorithm or {{ pool.coin.name }} coin.<br>
-                            Use an search engine and search for "{{ pool.coin.name }} miner software".
-                            download the miner software and configure your crypto miner.<br>
-                            <p>Where:</p>
-              <ul>
-			    <li>POOL STRATUM ADDRESS AND PORT - one off the stratum addresses above in the Pool Configuration section depending on the difficuty you want</li>
-                <li>YOUR_WALLET_ADDRESS - your valid {{ pool.coin.name }} wallet address</li>
-				<li>WORKERNAME - an optional workername can be used to identify the miner or RIG</li>
-				<li>PASSWORD - use x or leave it blank</li>
-				<br>
-				Optional:
-				<li>STATIC DIFFICULTY - to mine with a static (fixed) difficulty 
-				    simply use&nbsp;<code>d=xxx</code>&nbsp;as password in your
-					miner configuration where&nbsp;<code>xxx</code>&nbsp;denotes your
-					preferred difficulty.
-				</li>
-			  </ul>
+                            <img src="./../assets/img/Hiveos_KawPow2.png" style ="width: 40%">
+                            <h5>Windows:</h5>
+                        </div>
+                        <div v-else-if="pools.pool.coin.algorithm == 'Ghostrider'">
+                            <h5>HiveOS:</h5>
+                            <img src="./../assets/img/Hiveos_GR1.png" style ="width: 70%">
+                            <br>
+                            <img src="./../assets/img/Hiveos_GR2.png" style ="width: 40%">
+                            <h5>Windows:</h5>
+                        </div>
+                        
                     </span>
                 </div>
             </div>
@@ -94,41 +183,38 @@
   
   <script>
 import axios from 'axios'
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import {useRoute} from 'vue-router'
+//import { Dropdown } from '@/components/dropDown.vue';
   export default {
+    components:{
+        //Dropdown
+    },
     setup(){
         const pools = ref([]);
-        const blocks = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
+        const selectedRegion = ref("");
+        const selectedPort = ref("");
+        const selectedOS = ref("");
+        console.log(selectedRegion)
         function getPools() {
             axios
             .get('https://pool.flazzard.com/api/pools/' + id.value)
             .then((response) => {
-                //console.log(response.data.pools)
                 pools.value =response.data
-                //console.log(response.data.pools)
+                //console.log("Returned Pools: ", response.data)
             })
             .catch((error) => {
-                console.log(error)
-            })
-            
+                console.warn("getPools error: ", error)
+            }) 
         }
+        watch(selectedRegion,(newValue,oldValue) => { 
+            if(newValue != oldValue) {
+                console.log("Returned selectedRegion: ", selectedRegion)
+            }});
         function copyMe(address,port){
           navigator.clipboard.writeText(address + port);
-        }
-        function getBlocks(coin, section, wallet) {
-            axios
-            .get('https://pool.flazzard.com/api/pools' + '/' + coin + '/' + section + '/' + wallet)
-            .then((response) => {
-                //console.log(response.data.pools)
-                blocks.value =response.data
-                console.log(response.data)
-            })
-            .catch((error) => {
-                console.log(error)
-            })    
         }
         let stratumConnectionInfo = [];
 
@@ -168,10 +254,11 @@ import {useRoute} from 'vue-router'
         }
         return{
           getPools,
-          getBlocks,
           pools,
-          blocks,
           id,
+          selectedRegion,
+          selectedPort,
+          selectedOS,
           copyMe,
           getStratumStatus
         }
@@ -180,7 +267,6 @@ import {useRoute} from 'vue-router'
     },
     mounted() {
         this.getPools();
-        //this.getBlocks();
     },
   
   }

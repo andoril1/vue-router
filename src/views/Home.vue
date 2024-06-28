@@ -146,12 +146,11 @@ export default {
             axios
             .get('https://pool.flazzard.com/api/pools')
             .then((response) => {
-                //console.log(response.data.pools)
                 pools.value =response.data.pools
-                //console.log(response.data.pools)
+                //console.log("Returned Pools: ", response.data)
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getPools error: ", error)
             })
             
         }

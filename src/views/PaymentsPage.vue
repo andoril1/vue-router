@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <div class="row d-flex justify-content-center">
-      <div class="col-auto" v-for="pool in pools" :key="pool.id">
+      <div class="col-auto" v-if="pools.pool">
           <div class="info-box bg-yellow-gradient">
                   <span class="info-box-text">
-                        <h5>Payments to Miners - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h5>
+                        <h5>Payments to Miners - {{ pools.pool.coin.name }} [{{ pools.pool.coin.symbol }}]</h5>
                         <table>
                             <tr>
                                 <th id="time">[Time]</th>
@@ -15,7 +15,7 @@
                             <tr v-for="block in blocks" :key="block.id">
                                 <td style="padding-right: 10px;"><span v-html="renderTimeAgoBox(block.created)"></span></td>
                                 <td style="padding-right: 10px;"><a :href="block.addressInfoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{block.address.substring(0, 8)}}...{{ block.address.substring(block.address.length - 8) }}]</td>
-                                <td style="padding-right: 10px;">{{ formatHashrate(block.amount,2,"") }} {{pool.coin.symbol}}</td>
+                                <td style="padding-right: 10px;">{{ formatHashrate(block.amount,2,"") }} {{pools.pool.coin.symbol}}</td>
                                 <td style="padding-right: 10px;"><a :href="block.transactionInfoLink" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600v-80h160v-480H200v480h160v80H200Zm240 0v-246l-64 64-56-58 160-160 160 160-56 58-64-64v246h-80Z"/></svg></a>[{{ block.transactionConfirmationData.substring(0, 8)}}...{{block.transactionConfirmationData.substring(block.transactionConfirmationData.length - 8) }}]</td>
                             </tr>
                         </table>
@@ -42,10 +42,10 @@ import {useRoute} from 'vue-router'
             .get('https://pool.flazzard.com/api/pools/' + id.value)
             .then((response) => {
                 pools.value =response.data
-                //console.log(response.data)
+                //console.log("Returned Pools: ", pools.value)
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getPools error: ", error)
             })
             
         }
@@ -53,13 +53,12 @@ import {useRoute} from 'vue-router'
           axios
           .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/payments')
           .then((response) => {
-              //console.log(response.data.pools)
               blocks.value =response.data
-              //console.log(response.data)
+              //console.log("Returned Blocks: ", response.data)
 
           })
           .catch((error) => {
-              console.log(error)
+                console.warn("getBlocks error: ", error)
           })   
         }
         watch(blocks,(newValue,oldValue) => { 
@@ -68,14 +67,6 @@ import {useRoute} from 'vue-router'
                     getBlocks()
                 }, 60000);
         }});
-        const filterCreated = computed(function() {
-                //show if PPLNS - Button is pressed
-                return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
-        });
-        const filterPending = computed(function() {
-                //show if PPLNS - Button is pressed
-                return blocks.value.filter((block) => block.status=='pending')
-        });
         function formatHashrate(value, decimal, unit) {
       if (value === 0) {
           return "0 " + unit;
@@ -150,8 +141,6 @@ import {useRoute} from 'vue-router'
           getPools,
           pools,
           blocks,
-          filterCreated,
-          filterPending,
           id,
           formatHashrate,
           getBlocks,

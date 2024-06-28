@@ -49,12 +49,11 @@
               axios
               .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
-                  //console.log(response.data.pools)
                   pools.value =response.data
-                  console.log("Returned Pools: ", pools.value)
+                  //console.log("Returned Pools: ", pools.value)
               })
               .catch((error) => {
-                  console.log(error)
+                console.warn("getPools error: ", error)
               })
               
           }
@@ -63,7 +62,7 @@
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
             .then((response) => {
                 blocks.value =response.data
-                console.log("Returned Blocks: ", response.data)
+                //console.log("Returned Blocks: ", response.data)
 
             })
             .catch((error) => {
@@ -76,10 +75,6 @@
                       getBlocks()
                   }, 60000);
           }});
-          const filterPending = computed(function() {
-                  //show if PPLNS - Button is pressed
-                  return blocks.value.filter((block) => block.status=='pending')
-          });
           function formatHashrate(value, decimal, unit) {
         if (value === 0) {
             return "0 " + unit;
@@ -154,7 +149,6 @@
             getPools,
             pools,
             blocks,
-            filterPending,
             id,
             formatHashrate,
             getBlocks,

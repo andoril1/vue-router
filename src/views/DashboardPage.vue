@@ -1,14 +1,14 @@
 <template>
     <div class="container">
         <div class="row d-flex justify-content-center">
-            <div class="col-auto" v-for="pool in pools" :key="pool.id">
+            <div class="col-auto" v-if="pools.pool">
                 <div class="info-box bg-yellow-gradient">
                     <span class="info-box-text">
-                        <h5>Your Dashboard - {{ pool.coin.name }} [{{ pool.coin.symbol }}]</h5>
+                        <h5>Your Dashboard - {{ pools.pool.coin.name }} [{{ pools.pool.coin.symbol }}]</h5>
                         <hr>
                         <h5>{{headerText}}</h5>
-                        <input v-model="walletAddress" type="input" style="width: 85%" id="walletAddress"><input type="submit" @click="checkWallet(pool.id)" autocomplete="on" class="btn btn-info btn-fill btn-sm">
-                        <div v-if="blocks">
+                        <input v-model="walletAddress" type="input" style="width: 85%" id="walletAddress"><input type="submit" @click="checkWallet(pools.pool.id)" autocomplete="on" class="btn btn-info btn-fill btn-sm">
+                        <div v-if="blocks && minerBlocks.length">
                             <table style="margin: auto;">
                                 <tr>
                                     <th id="time" style="padding-right: 10px;">[Pending Shares]</th>
@@ -29,7 +29,7 @@
                                     <th id="time" style="padding-right: 10px;">[24 Hour Estimate]</th>
                                 </tr>
                                 <tr>
-                                    <td style="padding-right: 10px;">{{readableSeconds(pool.networkStats.networkHashrate / minerHashrate * pool.blockRefreshInterval) }}</td>
+                                    <td style="padding-right: 10px;">{{readableSeconds(pools.pool.networkStats.networkHashrate / minerHashrate * pools.pool.blockRefreshInterval) }}</td>
                                     <td style="padding-right: 10px;">{{ formatHashrate(blocks.pendingBalance,2,"") }}</td>
                                 </tr>
                             </table>
@@ -89,6 +89,8 @@
                                                 <th id="one">[Worker name]</th>
                                                 <th id="two">[Hashrate]</th>
                                                 <th id="three">[Shares per second]</th>
+                                                <th id="three">Total Hashrate: {{formatHashrate(minerHashrate)}}</th>
+
                                             </tr>
                                             <tr v-for="(_id,value) in minerPerformance[minerPerformance.length -1].workers" :key="_id">
                                                 <td style="padding-right: 10px;">[{{ value }}]<hr></td>
@@ -101,7 +103,7 @@
                                             <th id="one">[Current Payout Limit]</th>
                                         </tr>
                                         <tr>
-                                            <td style="padding-right: 10px;">[{{ minerSettings.paymentThreshold }} {{ pool.coin.symbol }}]<hr></td>
+                                            <td style="padding-right: 10px;">[{{ minerSettings.paymentThreshold }} {{ pools.pool.coin.symbol }}]<hr></td>
                                         </tr>
                                         <tr>
                                             <th id="one">[Enter ip-address]</th>
@@ -135,7 +137,7 @@ import {useRoute} from 'vue-router'
         const minerBlocks = ref([]);
         const minerPay = ref([]);
         const minerPerformance = ref([]);
-        const minerHashrate = ref([]);
+        let minerHashrate = ref(0);
         const minerSettings = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
@@ -144,23 +146,16 @@ import {useRoute} from 'vue-router'
         const thresholdAmount = ref(""); 
         const buttonString =ref("blocks");
         let headerText =ref("Please input your address to load stats");
-        const requestBody = {
-            settings: {
-                PaymentThreshold: thresholdAmount.value
-            },
-            ipAddress: ipAddress.value
-        };
 
         function getPools() {
             axios
             .get('https://pool.flazzard.com/api/pools/' + id.value)
             .then((response) => {
-                //console.log(response.data.pools)
                 pools.value =response.data
-                //console.log(response.data.pools)
+                //console.log("Returned Pools: ", response.data)
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getPools error: ", error)
             })
             
         }
@@ -168,33 +163,34 @@ import {useRoute} from 'vue-router'
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value)
             .then((response) => {
-                //console.log(response.data)
                 blocks.value =response.data
+                //console.log("Returned Blocks: ", response.data)
+
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getBlocks error: ", error)
             })           
         }
         function getMinerBlocks() {
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/blocks' )
             .then((response) => {
-                //console.log(response.data)
                 minerBlocks.value =response.data
+                //console.log("Returned MinerBlocks: ", response.data)
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getMinerBlocks error: ", error)
             })           
         }
         function getMinerPay() {
             axios
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/payments' )
             .then((response) => {
-                //console.log(response.data)
                 minerPay.value =response.data
+                //console.log("Returned MinerPay: ", response.data)
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getMinerPay error: ", error)
             })           
         }
         function getMinerPerformance() {
@@ -202,10 +198,10 @@ import {useRoute} from 'vue-router'
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/performance' )
             .then((response) => {
                 minerPerformance.value =response.data
-                //console.log(minerPerformance.value)
+                console.log("Returned MinerPerformance: ", response.data)
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getMinerPerformance error: ", error)
             })           
         }
         function getMinerSettings() {
@@ -213,10 +209,10 @@ import {useRoute} from 'vue-router'
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/' + 'miners' + '/' + walletAddress.value + '/settings' )
             .then((response) => {
                 minerSettings.value =response.data
-                //console.log(minerSettings.value)
+                //console.log("Returned MinerSettings: ", response.data)
             })
             .catch((error) => {
-                console.log(error)
+                console.warn("getMinerSettings error: ", error)
             })           
         }
         function setMinerThreshold() {
@@ -227,11 +223,11 @@ import {useRoute} from 'vue-router'
             },
             ipAddress: ipAddress.value })
             .then((response) => {
-                console.log('Response:', response.data)
+                //console.log("Returned MinerThreshold: ", response.data)
                 getMinerSettings()
             })
             .catch((error) => {
-                console.log('Error:', error)
+                console.warn("getMinerThreshold error: ", error)
             })           
         }
         watch(blocks,(newValue,oldValue) => { 
@@ -242,7 +238,7 @@ import {useRoute} from 'vue-router'
         }});
         watch(buttonString,(newValue,oldValue) => { 
             if(newValue != oldValue) {
-                //console.log(buttonString)
+                //console.log("Returned buttonString: ", buttonString)
         }});
         watch(headerText,(newValue,oldValue) => { 
             if(newValue != oldValue) {
@@ -257,14 +253,10 @@ import {useRoute} from 'vue-router'
             getMinerPerformance()
             getMinerSettings()
         }
-        const filterCreated = computed(function() {
-                //show if PPLNS - Button is pressed
-                return blocks.value.filter((block) => block.created=='2024-06-11T10:30:30.38267Z')
-        });
-        const filterPending = computed(function() {
-                //show if PPLNS - Button is pressed
-                return blocks.value.filter((block) => block.status=='pending')
-        });
+        function calculateHashrate(hashrate){
+            minerHashrate += hashrate;
+            console.log(minerHashrate);
+        }
         function formatHashrate(value, decimal, unit) {
       if (value === 0) {
           return "0 " + unit;
@@ -380,17 +372,14 @@ import {useRoute} from 'vue-router'
           headerText,
           minerHashrate,
           ipAddress,
-          filterCreated,
-          filterPending,
           id,
-          requestBody
+          calculateHashrate
         }
         
 
     },
     mounted() {
         this.getPools();
-        //this.getBlocks();
     },
   
   }
