@@ -24,9 +24,10 @@
                             
                         </tr>
                     </table>
+                    <br>
                     <table style="margin:auto">
                         <tr>
-                            <th>Choose region</th>
+                            <th>Select region</th>
                             <th>Select port</th>
                             <th>Select OS</th>
                         </tr>
@@ -39,7 +40,7 @@
                             </td>
                             <td>
                                 <select v-model="selectedPort">
-                                    <option v-for="(value, id) in pools.pool.ports" :key="id">{{value.name}} - VarDiff: {{ value.varDiff.minDiff }} &harr; &infin;</option>
+                                    <option v-for="(value, id) in pools.pool.ports" :key="id" :value="id">{{value.name}} - VarDiff: {{ value.varDiff.minDiff }} &harr; &infin;</option>
                                 </select>
                             </td>
                             <td>
@@ -49,33 +50,19 @@
                                 </select>
                             </td>
                         </tr>
-                        <div v-if="selectedRegion == 'Europe'">stratum+tcp://eu.flazzard.com:</div>
-                        <div v-else-if="selectedRegion == 'North America'">stratum+tcp://na.flazzard.com:</div>
                     </table>
                     <br>
-                        <table style="margin: auto;">
-                            
-                        <tr>
-                            <th id="time">[EU]</th>
-                            <th id="time">[Description]</th>
-                            <th id="time">[NA]</th>
-                        </tr>
-                        <tr v-for="(value, id) in pools.pool.ports" :key="id">
-                           
-                            <td style="padding-right: 10px;">
-                                <h6><button @click="copyMe('stratum+tcp://eu.flazzard.com:', id)" style="background-color: transparent; padding: 0px;">
-                                <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button>
-                                stratum+tcp://eu.flazzard.com:{{ id }}</h6>
-                            </td>
-                            <td style="padding-right: 10px;">[{{ value.name }}]<br>[Var Diff]<br>{{ value.varDiff.minDiff }} &harr; &infin;</td>
-                            <td style="padding-right: 10px;">
-                                <h6>stratum+tcp://na.flazzard.com:{{ id }}
-                                <button @click="copyMe('stratum+tcp://na.flazzard.com:', id)" style="background-color: transparent; padding: 0px;">
-                                <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button></h6>
-                            </td>
-                            
-                        </tr>
-                    </table>
+                    <h3 v-if="selectedPort && selectedRegion == 'Europe'">
+                        <pre>stratum+tcp://eu.flazzard.com:{{selectedPort}}</pre>
+                        <button @click="copyMe('eu', selectedPort)" style="background-color: transparent; padding: 0px;">
+                        <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;"></button>
+                    </h3>
+                    <h3 v-if="selectedPort && selectedRegion == 'North America'">
+                        <pre>stratum+tcp://na.flazzard.com:{{selectedPort}}</pre>
+                        <button @click="copyMe('eu', selectedPort)" style="background-color: transparent; padding: 0px;">
+                            <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;">
+                        </button>
+                    </h3>
                     </span>
                 </div>
                 <div class="info-box bg-yellow-gradient">
@@ -111,10 +98,93 @@
                             <br> Warning: mining directly to an exchange is not recommended!
                         </div>
                         <hr>
-                        <h5>What miningsoftware to use?</h5>
-                        
+                        <div v-if="selectedOS == 'HiveOS'"><h5>HiveOS Config suggestion:</h5>
+                            <hr>
+                            <h5>Add wallet in HiveOS:</h5>
+                            <br>
+                            <table>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/wallet_top.png" style="width:450px;"></td>
+                                    <th>Adding a new coin to HiveOS (wallets -> add wallet)</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/wallet_coin.png" style="width:450px;"></td>
+                                    <th>Search for the coin or add it if it doesn't exist.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/wallet_address.png" style="width:450px;"></td>
+                                    <th>Add your mining address for {{ pools.pool.coin.name }}.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/wallet_name.png" style="width:450px;"></td>
+                                    <th>Add the name of your wallet.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/wallet_bottom.png" style="width:450px;"></td>
+                                    <th>Press Create and your done!</th>
+                                </tr>
+                            </table>
+                            <br>
+                            <h5>Create FlightSheet</h5>
+                            <table>
+                                <tr>
+                                    <th>Add {{pools.pool.coin.name}}<br>- coin</th>
+                                    <th>Add {{pools.pool.coin.name}}<br>- wallet</th>
+                                    <th>Configure <br>in miner</th>
+                                    <th>Select miner</th>
+                                </tr> 
+                                <tr style="background-color:#363d45">
+                                    <td><img src="./../assets/img/HiveOS/flightsheet_coin.webp" style="width:120px;"></td>
+                                    <td><img src="./../assets/img/HiveOS/flightsheet_wallet.webp" style="width:120px;"></td>
+                                    <td><img src="./../assets/img/HiveOS/flightsheet_pool.webp" style="width:120px;"></td>
+                                    <td><img src="./../assets/img/HiveOS/flightsheet_XMRig.webp" style="width:120px;"></td>
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/flightsheet_bottom.webp" style="width:487px;"></td>
+                                    <th>Choose a name and press update</th>
+                                </tr>
+                            </table>
+                            <br>
+                            <h5>Setup miner config</h5>
+                            <br>
+                            <table>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/bzminer_top.webp" style="width:450px;"></td>
+                                    <th>We recommend Bzminer for this coin.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px;"><img src="./../assets/img/HiveOS/bzminer_algo.webp" style="width:450px;"></td>
+                                    <th>Select kaspa.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/bzminer_wallet.webp" style="width:450px;"></td>
+                                    <th>Write %WAL% to use your HiveOS wallet.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/bzminer_worker.webp" style="width:450px;"></td>
+                                    <th>Write %WORKER_NAME% to display workername</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/bzminer_pool.webp" style="width:450px;"></td>
+                                    <th>Add pool from above.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/bzminer_extra.webp" style="width:450px;"></td>
+                                    <th>Optional. Here we're dualmining zil, <br>theres also some OC Settings.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/bzminer_bottom.webp" style="width:450px;"></td>
+                                    <th>Press update to save changes.</th>
+                                </tr>
+                            </table>
+                        </div>
+                        <div v-else-if="selectedOS == 'Windows'">Windows:</div>
+                        <div v-else>Please select mining OS above for config suggestions...</div>
+                        <!--
                         <div v-if="pools.pool.coin.algorithm == 'Karlsenhash'">
-                            <h5>HiveOS:</h5>
+                            
                             <table>
                                 <tr>
                                     <td><img src="./../assets/img/Hiveos_Karlsen1.png" style="width:450px;"></td>
@@ -173,7 +243,7 @@
                             <img src="./../assets/img/Hiveos_GR2.png" style ="width: 40%">
                             <h5>Windows:</h5>
                         </div>
-                        
+                        -->
                     </span>
                 </div>
             </div>
@@ -185,10 +255,8 @@
 import axios from 'axios'
 import {ref, watch} from 'vue'
 import {useRoute} from 'vue-router'
-//import { Dropdown } from '@/components/dropDown.vue';
   export default {
     components:{
-        //Dropdown
     },
     setup(){
         const pools = ref([]);
@@ -213,8 +281,8 @@ import {useRoute} from 'vue-router'
             if(newValue != oldValue) {
                 console.log("Returned selectedRegion: ", selectedRegion)
             }});
-        function copyMe(address,port){
-          navigator.clipboard.writeText(address + port);
+        function copyMe(region,port){
+          navigator.clipboard.writeText('stratum+tcp://' + region + '.flazzard.com:' + port);
         }
         let stratumConnectionInfo = [];
 
@@ -274,6 +342,6 @@ import {useRoute} from 'vue-router'
   
   <style>
   table, th, td {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 0px solid #ddd;
     }
   </style>
