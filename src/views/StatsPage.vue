@@ -18,7 +18,8 @@
                         <td style="padding-right: 10px;">{{ pools.pool.totalBlocks }}</td>
                         <td style="padding-right: 10px;">${{formatHashrate(coinPrice,7,"") }}</td>
                         <td style="padding-right: 10px;">${{formatHashrate(coinPrice * blocks[blocks.length -1].reward,4,"")}}</td>
-                        <td style="padding-right: 10px;" v-if="newBlocks[0]">{{ formatHashrate(newBlocks[newBlocks.length -1].reward,1,pools.pool.coin.symbol) }}</td>
+                        <td style="padding-right: 10px;" v-if="newBlocks[0]">{{ formatHashrate(filterConfirmed[0].reward,1,pools.pool.coin.symbol) }}</td>
+                        <td style="padding-right: 10px;" v-else>wait...</td>
                     </tr>
                     <br>
                     <tr>
@@ -139,9 +140,9 @@
                 //show if PPLNS - Button is pressed
                 return blocks.value.filter((block) => block.status=='pending')
           });
-          const filterPendingBlock = computed(function() {
+          const filterConfirmed = computed(function() {
                 //show if PPLNS - Button is pressed
-                return newBlocks.value.filter((block) => block.status=='pending')
+                return newBlocks.value.filter((block) => block.status=='confirmed')
           });
           function formatHashrate(value, decimal, unit) {
             if (value === 0) {
@@ -283,7 +284,7 @@
             newBlocks,
             coinPrice,
             filterPending,
-            filterPendingBlock,
+            filterConfirmed,
             id,
             PoolEffort,
             formatHashrate,
