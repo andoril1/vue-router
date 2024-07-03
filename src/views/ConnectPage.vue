@@ -98,7 +98,8 @@
                             <br> Warning: mining directly to an exchange is not recommended!
                         </div>
                         <hr>
-                        <div v-if="selectedOS == 'HiveOS'"><h5>HiveOS Config suggestion:</h5>
+                        <h4>Miner Config</h4>
+                        <div v-if="selectedOS == 'HiveOS'"><h5>HiveOS Config suggestions:</h5>
                             <hr>
                             <h5>Add wallet in HiveOS:</h5>
                             <br>
@@ -126,6 +127,57 @@
                             </table>
                             <br>
                             <h5>Create FlightSheet</h5>
+                            <div class="row main-row-1">
+                                <div class="col-auto">
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            Add {{pools.pool.coin.name}}<br>-coin
+                                        </div>
+                                        <div class="col-auto">
+                                            Add {{pools.pool.coin.name}}<br>-wallet
+                                        </div>
+                                        <div class="col-auto">
+                                            Configure <br>in miner
+                                        </div>
+                                        <div class="col-auto">
+                                            Select miner
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <img class="cardFlightsheet" src="./../assets/img/Hiveos_Karlsen1.png">
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                                <div class="col-6">
+                                    Choose a name and press enter
+                                </div>
+                            </div>
+                            
+                            <div class="row main-row-2">
+                                <h2>Setup miner config</h2>
+                            </div>
+                            
+                            <div class="row main-row-3">    
+                                <div class="col-6">
+                                    <img class="">
+                                </div>
+                                <div class="col-6">
+                                    <div class="row">
+                                        We recommned BZmienr for this coin.
+                                    </div>
+                                    <div class="row">
+                                        Select Kaspa
+                                    </div>
+                                    <div class="row">
+                                        Write...
+                                    </div>
+                                    <div class="row">
+                                        Write...
+                                    </div>
+                                </div>
+                            </div>
                             <table>
                                 <tr>
                                     <th>Add {{pools.pool.coin.name}}<br>- coin</th>
@@ -137,19 +189,22 @@
                                     <td><img src="./../assets/img/HiveOS/flightsheet_coin.webp" style="width:120px;"></td>
                                     <td><img src="./../assets/img/HiveOS/flightsheet_wallet.webp" style="width:120px;"></td>
                                     <td><img src="./../assets/img/HiveOS/flightsheet_pool.webp" style="width:120px;"></td>
-                                    <td><img src="./../assets/img/HiveOS/flightsheet_XMRig.webp" style="width:120px;"></td>
+                                    <td v-if="pools.pool.coin.algorithm == 'Ghostrider'"><img src="./../assets/img/HiveOS/flightsheet_XMRig.webp" style="width:120px;"></td>
+                                    <td v-else-if="pools.pool.coin.algorithm == 'kHeavyHash' || pools.pool.coin.algorithm == 'KawPow'"><img src="./../assets/img/HiveOS/flightsheet_bzminer.webp" style="width:120px;"></td>
+                                    <td v-else-if="pools.pool.coin.algorithm == 'Karlsenhash'"><img src="./../assets/img/HiveOS/flightsheet_rigel.webp" style="width:120px;"></td>
                                 </tr>
                             </table>
                             <table>
                                 <tr>
                                     <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/flightsheet_bottom.webp" style="width:487px;"></td>
-                                    <th>Choose a name and press update</th>
+                                    <th>Choose a name and Create flightsheet</th>
                                 </tr>
                             </table>
                             <br>
                             <h5>Setup miner config</h5>
                             <br>
-                            <table>
+                            <div class="hiveosOutside">hello</div>
+                            <table v-if="pools.pool.coin.algorithm == 'kHeavyHash'">
                                 <tr>
                                     <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/bzminer_top.webp" style="width:450px;"></td>
                                     <th>We recommend Bzminer for this coin.</th>
@@ -179,71 +234,181 @@
                                     <th>Press update to save changes.</th>
                                 </tr>
                             </table>
-                        </div>
-                        <div v-else-if="selectedOS == 'Windows'">Windows:</div>
-                        <div v-else>Please select mining OS above for config suggestions...</div>
-                        <!--
-                        <div v-if="pools.pool.coin.algorithm == 'Karlsenhash'">
-                            
-                            <table>
+                            <table v-else-if="pools.pool.coin.algorithm == 'Karlsenhash'">
                                 <tr>
-                                    <td><img src="./../assets/img/Hiveos_Karlsen1.png" style="width:450px;"></td>
-                                    <td style="text-align:left">
-                                        <ul>
-                                            <li>Add wallet and coin to Hiveos</li>
-                                            <li>Select {{ pools.pool.coin.name }} under Coin in Hiveos</li>
-                                            <li>Select your {{ pools.pool.coin.name }}-wallet</li>
-                                            <li>Set Pool as "Configure in miner".</li>
-                                            <li>Select your miner, we recommend Rigel miner for this coin.</li>
-                                        </ul>
-                                    </td>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/karlsen_top.webp" style="width:450px;"></td>
+                                    <th>We recommend Rigel miner for this coin.</th>
                                 </tr>
                                 <tr>
-                                    <td><img src="./../assets/img/Hiveos_Karlsen2.png" style="width:450px;"></td>
-                                    <td style="text-align:left">
-                                        <ul>
-                                            <li>[Hash algorithm] Select Karlsenhash<hr></li>
-                                            <li>[Wallet template] Input %WAL%<hr></li>
-                                            <li>[Pass] Leave empty or write x, If you wish to use a static difficulty, <br>add d=xxxx (replace xxxx with your desired difficulty).<hr></li>
-                                            <li>[WorkerName] put %WORKER_NAME% <br>for the worker name to be displayed in the pool.<hr></li>
-                                            <li>[Pool URL] Put the desired url and port from above.<hr></li>
-                                            <li>[Extra config arguements] Optional,<br> in the example im dualmining zil.<hr></li>
-                                        </ul>
-                                    </td>
+                                    <td style="padding-right: 10px;"><img src="./../assets/img/HiveOS/karlsen_algo.webp" style="width:450px;"></td>
+                                    <th>Select karlsenhash.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/karlsen_wallet.webp" style="width:450px;"></td>
+                                    <th>Write %WAL% to use your HiveOS wallet.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/karlsen_worker.webp" style="width:450px;"></td>
+                                    <th>Write %WORKER_NAME% to display workername
+                                        <br>
+                                        Pass: x or empty, input d=xxxx for static diff<br>
+                                        (replace xxxx with desired difficulty)
+
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/karlsen_pool.webp" style="width:450px;"></td>
+                                    <th>Add pool from above.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/karlsen_extra.webp" style="width:450px;"></td>
+                                    <th>Optional. Here we're dualmining zil, <br>theres also some OC Settings.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/karlsen_bottom.webp" style="width:450px;"></td>
+                                    <th>Press Apply changes</th>
                                 </tr>
                             </table>
-                            <h5>Windows:</h5>
+                            <table v-else-if="pools.pool.coin.algorithm == 'KawPow'">
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/kawpow_top.webp" style="width:450px;"></td>
+                                    <th>We recommend bzminer miner for this coin.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px;"><img src="./../assets/img/HiveOS/kawpow_algo.webp" style="width:450px;"></td>
+                                    <th>Search and select kawpow.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/kawpow_wallet.webp" style="width:450px;"></td>
+                                    <th>Write %WAL% to use your HiveOS wallet.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/kawpow_worker.webp" style="width:450px;"></td>
+                                    <th>Write %WORKER_NAME% to display workername
+                                        <br>
+                                        Pass: x or empty, input d=xxxx for static diff<br>
+                                        (replace xxxx with desired difficulty)
+
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/kawpow_pool.webp" style="width:450px;"></td>
+                                    <th>Add pool from above.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/kawpow_extra.webp" style="width:450px;"></td>
+                                    <th>Optional. Here we're dualmining zil, <br>theres also some OC Settings.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/kawpow_bottom.webp" style="width:450px;"></td>
+                                    <th>Press Apply changes</th>
+                                </tr>
+                            </table>
+                            <table v-else-if="pools.pool.coin.algorithm == 'Ghostrider'">
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/Ghostrider_top.webp" style="width:450px;"></td>
+                                    <th>We recommend XMRIG(new) for this coin.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px;"><img src="./../assets/img/HiveOS/Ghostrider_algo.webp" style="width:450px;"></td>
+                                    <th>Search and select Ghostrider(RTM).</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/Ghostrider_pool.webp" style="width:450px;"></td>
+                                    <th v-if="selectedRegion == 'Europe'">Add pool: stratum+tcp://eu.flazzard.com:{{ selectedPort }} 
+                                        <button @click="copyMe('eu', selectedPort)" style="background-color: transparent; padding: 0px;">
+                                            <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;">
+                                        </button>
+                                    </th>
+                                    <th v-if="selectedRegion == 'North America'">Add pool: stratum+tcp://na.flazzard.com:{{ selectedPort }} 
+                                        <button @click="copyMe('na', selectedPort)" style="background-color: transparent; padding: 0px;">
+                                            <img src="@/assets/img/copy.png" style="height: 25px; width: 25px;">
+                                        </button>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/Ghostrider_hugePages.webp" style="width:450px;"></td>
+                                    <th>Set CPU hugepages to 1248.</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/Ghostrider_cpuConfig.webp" style="width:450px;"></td>
+                                    <th>"cpu": {
+                                        "ghostrider": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
+                                        <br> 
+                                        "huge-pages": true,
+                                        <br>
+                                        "hw-aes": null,
+                                        <br>
+                                        "priority": null,
+                                        <br>
+                                        "memory-pool": false,
+                                        <br>
+                                        "asm": true
+                                       }</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 10px"><img src="./../assets/img/HiveOS/Ghostrider_bottom.webp" style="width:450px;"></td>
+                                    <th>Press Apply changes</th>
+                                </tr>
+                            </table>
                         </div>
-                        <div v-else-if="pools.pool.coin.algorithm == 'Pyrin'">
-                            <h5>HiveOS:</h5>
-                            <img src="./../assets/img/Hiveos_Pyrin1.png" style ="width: 70%">
-                            <br>
-                            <img src="./../assets/img/Hiveos_Pyrin2.png" style ="width: 40%">
-                            <h5>Windows:</h5>
+                        <div v-else-if="selectedOS == 'Windows'">Windows config suggestions:
+                            <div v-bind="setMiner(pools.pool.coin.algorithm)">
+                                For {{ pools.pool.coin.name }} we recommend {{ minerName }} <a :href="minerLink" target="_blank">[Download here]</a>
+                                <br> Choose the latest version and download to your PC / Miningrig
+                                <div v-if="pools.pool.coin.algorithm == 'KawPow'">
+                                    <hr>
+                                    Either edit aipg.bat or make a new batfile inside the {{ minerName }} folder with this text:
+                                    <hr>
+                                    <div class="codeCard">
+                                    @echo off<br>
+                                    cd /d %~dp0<br>
+                                    bzminer -a gamepass -w WALLET_ADDRESS -p stratum+tcp://{{ stratumPrefix }}.flazzard.com:{{selectedPort}} --nc 1
+                                    <br>
+                                    pause
+                                    </div>
+                                </div>
+                                <div v-if="pools.pool.coin.algorithm == 'Karlsenhash'">
+                                    <hr>
+                                    Either edit kls.bat or make a new batfile inside the {{ minerName }} folder with this text:
+                                    <hr>
+                                    <div class="codeCard">
+                                    @echo off<br>
+                                    cd /d %~dp0<br>
+                                    rigel.exe -a karlsenhash -o stratum+tcp://{{ stratumPrefix }}.flazzard.com:{{selectedPort}} -u YOUR_KLS_WALLET -w my_rig --log-file
+                                    <br>
+                                    pause
+                                    </div>
+                                </div>
+                                <div v-if="pools.pool.coin.algorithm == 'kHeavyHash'">
+                                    <hr>
+                                    There doesnt appear to be a file for Kaspa in the {{ minerName }} folder,<br> so create one named kaspa.bat in the {{ minerName }} folder.
+                                    <hr>
+                                    <div class="codeCard">
+                                    @echo off<br>
+                                    cd /d %~dp0<br>
+                                    bzminer -a kaspa -w WALLET_ADDRESS -p stratum+tcp://{{ stratumPrefix }}.flazzard.com:{{selectedPort}} --nc 1
+                                    <br>
+                                    pause
+                                    </div>
+                                </div>
+                                <div v-if="pools.pool.coin.algorithm == 'Pyrin'">
+                                    <hr>
+                                    Either edit pyi.bat or make a new batfile inside the {{ minerName }} folder with this text:
+                                    <hr>
+                                    <div class="codeCard">
+                                    @echo off<br>
+                                    cd /d %~dp0<br>
+                                    rigel.exe -a pyrinhash -o stratum+tcp://{{ stratumPrefix }}.flazzard.com:{{selectedPort}} -u YOUR_KLS_WALLET -w my_rig --log-file
+                                    <br>
+                                    pause
+                                    </div>
+                                </div>
+                                Then save the batfile and double click to run it.<br>
+                                Check out the miner's github for more commands.
+                            </div>
                         </div>
-                        <div v-else-if="pools.pool.coin.algorithm == 'kHeavyHash'">
-                            To mine {{ pools.pool.coin.name }} with GPU's we recommend Rigel, see instructions below:
-                            <h5>HiveOS:</h5>
-                            <img src="./../assets/img/Hiveos_KHeavyHash1.png" style ="width: 70%">
-                            <br>
-                            <img src="./../assets/img/Hiveos_KHeavyHash2.png" style ="width: 40%">
-                            <h5>Windows:</h5>
-                        </div>
-                        <div v-else-if="pools.pool.coin.algorithm == 'KawPow'">
-                            <h5>HiveOS:</h5>
-                            <img src="./../assets/img/Hiveos_Kawpow1.png" style ="width: 70%">
-                            <br>
-                            <img src="./../assets/img/Hiveos_KawPow2.png" style ="width: 40%">
-                            <h5>Windows:</h5>
-                        </div>
-                        <div v-else-if="pools.pool.coin.algorithm == 'Ghostrider'">
-                            <h5>HiveOS:</h5>
-                            <img src="./../assets/img/Hiveos_GR1.png" style ="width: 70%">
-                            <br>
-                            <img src="./../assets/img/Hiveos_GR2.png" style ="width: 40%">
-                            <h5>Windows:</h5>
-                        </div>
-                        -->
+                        <div v-else>[Miner OS unselected] please select from dropdown above</div>
                     </span>
                 </div>
             </div>
@@ -262,24 +427,50 @@ import {useRoute} from 'vue-router'
         const pools = ref([]);
         const route = useRoute();
         const id = ref(route.params.id);
-        const selectedRegion = ref("");
+        const selectedRegion = ref("Europe");
         const selectedPort = ref("");
-        const selectedOS = ref("");
-        console.log(selectedRegion)
+        const selectedOS = ref("HiveOS");
+        const minerName = ref("");
+        const minerLink = ref("");
+        const stratumPrefix = ref("");
         function getPools() {
             axios
             .get('https://pool.flazzard.com/api/pools/' + id.value)
             .then((response) => {
                 pools.value =response.data
                 //console.log("Returned Pools: ", response.data)
+                selectedPort.value = Object.keys(pools.value.pool.ports)[0]
             })
             .catch((error) => {
                 console.warn("getPools error: ", error)
             }) 
         }
+        function setMiner(algorithm){
+            if (algorithm == 'kHeavyHash'){
+                minerName.value = 'Bzminer'
+                minerLink.value = 'https://github.com/bzminer/bzminer/releases'
+            }
+            if(algorithm == 'Karlsenhash'){
+                minerName.value = 'Rigel miner'
+                minerLink.value = 'https://github.com/rigelminer/rigel/releases'
+            }
+            if(algorithm == 'KawPow'){
+                minerName.value = 'Bzminer'
+                minerLink.value = 'https://github.com/bzminer/bzminer/releases'
+            }
+            if(algorithm == 'Ghostrider'){
+                minerName.value = 'XMRig(new)'
+                minerLink.value = 'https://github.com/xmrig/xmrig/releases'
+            }
+        }
         watch(selectedRegion,(newValue,oldValue) => { 
             if(newValue != oldValue) {
-                console.log("Returned selectedRegion: ", selectedRegion)
+                if(selectedRegion.value == 'Europe'){
+                    stratumPrefix.value = 'eu'
+                }else if(selectedRegion.value == 'North America'){
+                    stratumPrefix.value = 'na'
+                }
+                
             }});
         function copyMe(region,port){
           navigator.clipboard.writeText('stratum+tcp://' + region + '.flazzard.com:' + port);
@@ -327,8 +518,12 @@ import {useRoute} from 'vue-router'
           selectedRegion,
           selectedPort,
           selectedOS,
+          minerLink,
+          minerName,
+          stratumPrefix,
           copyMe,
-          getStratumStatus
+          getStratumStatus,
+          setMiner
         }
         
 
@@ -341,7 +536,23 @@ import {useRoute} from 'vue-router'
   </script>
   
   <style>
-  table, th, td {
-    border-bottom: 0px solid #ddd;
+    table, th, td {
+        border-bottom: 0px solid #ddd;
     }
+    .codeCard {
+        background-color: rgba(10, 23, 63, 0.911);
+        border: 1px solid;
+        border-radius: 10px;
+        border-color: #f5f3f9;
+        text-align: left;
+    }
+    .hiveosOutside {
+        background-color: black;
+        max-width: 500px;
+        text-align:left; 
+    }
+    .cardFlightsheet {
+        max-width: 500px;
+    }
+
   </style>

@@ -18,7 +18,7 @@
                         <td style="padding-right: 10px;">{{ pools.pool.totalBlocks }}</td>
                         <td style="padding-right: 10px;">${{formatHashrate(coinPrice,7,"") }}</td>
                         <td style="padding-right: 10px;">${{formatHashrate(coinPrice * blocks[blocks.length -1].reward,4,"")}}</td>
-                        <td style="padding-right: 10px;">{{ formatHashrate(blocks[blocks.length -1].reward,1,pools.pool.coin.symbol) }}</td>
+                        <td style="padding-right: 10px;" v-if="newBlocks[0]">{{ formatHashrate(newBlocks[newBlocks.length -1].reward,1,pools.pool.coin.symbol) }}</td>
                     </tr>
                     <br>
                     <tr>
@@ -33,7 +33,7 @@
                         <td style="padding-right: 10px;">{{ pools.pool.networkStats.connectedPeers }}</td>
                         <td style="padding-right: 10px;">{{ pools.pool.paymentProcessing.minimumPayment }} {{ pools.pool.coin.symbol }}</td>
                         <td style="padding-right: 10px;">{{ pools.pool.poolFeePercent }}%</td>
-                        <td style="padding-right: 10px;">{{ PoolEffort }}</td>
+                        <td style="padding-right: 10px;">{{ formatHashrate(PoolEffort,2,"%") }}</td>
                         <td style="padding-right: 10px;">{{readableSeconds(pools.pool.networkStats.networkHashrate / pools.pool.poolStats.poolHashrate * pools.pool.blockRefreshInterval) }}</td>
                         <td style="padding-right: 10px;">{{ formatHashrate(pools.pool.totalPaid,3,"") }} [{{ pools.pool.coin.symbol }}]</td>
                     </tr>
@@ -58,8 +58,9 @@
           
           const pools = ref([]);
           const blocks = ref([]);
+          const newBlocks = ref([]);
           const coinPrice = ref({});
-          let PoolEffort = ref(0);
+          const PoolEffort = ref(0);
           const route = useRoute();
           const id = ref(route.params.id);
 
@@ -80,7 +81,8 @@
               .get('https://pool.flazzard.com/api/pools/' + id.value)
               .then((response) => {
                     pools.value =response.data
-                    console.log("Returned Pools: ", pools.value)
+                    //console.log("Returned Pools: ", pools.value)
+                    getNewBlocks()
                     setPrice(pools.value.pool.coin.symbol)
                     checkEffort(pools.value.pool.coin.family,pools.value.pool.poolEffort, pools.value.pool.coin.name)
               })
@@ -96,7 +98,7 @@
                 .then((response) => {
                     //set coin price
                     coinPrice.value = response.data.lastPrice
-                    console.log("Returned coin price: ", coinPrice.value)
+                    //console.log("Returned coin price: ", coinPrice.value)
                 })
                 .catch((error) => {
                     console.warn("getPrice error: ", error)
@@ -111,7 +113,20 @@
             .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks')
             .then((response) => {
                 blocks.value =response.data
-                console.log("Returned Blocks: ", response.data)
+                //console.log("Returned Blocks: ", response.data)
+
+            })
+            .catch((error) => {
+                console.warn("getBlocks error: ", error)
+            })
+            
+        }
+        function getNewBlocks() {
+            axios
+            .get('https://pool.flazzard.com/api/pools' + '/' + id.value + '/blocks?page=0&pageSize=' + pools.value.pool.networkStats.blockHeight)
+            .then((response) => {
+                newBlocks.value =response.data
+                console.log("Returned newBlocks: ", response.data)
 
             })
             .catch((error) => {
@@ -123,6 +138,10 @@
           const filterPending = computed(function() {
                 //show if PPLNS - Button is pressed
                 return blocks.value.filter((block) => block.status=='pending')
+          });
+          const filterPendingBlock = computed(function() {
+                //show if PPLNS - Button is pressed
+                return newBlocks.value.filter((block) => block.status=='pending')
           });
           function formatHashrate(value, decimal, unit) {
             if (value === 0) {
@@ -217,43 +236,43 @@
         }
         function checkEffort(family, poolEffort, coinName) {
             if (family == "alephium") {
-                PoolEffort = Number(poolEffort) * Math.pow(2, 30) * 100;
+                PoolEffort.value = Number(poolEffort) * Math.pow(2, 30) * 100;
                 // Bitcoin (family)
             } else if (family == "bitcoin") {
                 // Vertcoin (coin)
                 if (coinName == "Vertcoin") {
-                PoolEffort = (Number(poolEffort) / 256) * 100;
+                PoolEffort.value = (Number(poolEffort) / 256) * 100;
                 // VishAI (coin)
                 } else if (coinName == "Vishai") {
-                PoolEffort = (Number(poolEffort) / 65536) * 100;
+                PoolEffort.value = (Number(poolEffort) / 65536) * 100;
                 // Reaction (coin)
                 } else if (coinName == "Reaction") {
-                PoolEffort = (Number(poolEffort) / 65536) * 100;
+                PoolEffort.value = (Number(poolEffort) / 65536) * 100;
                 } else {
-                PoolEffort = Number(poolEffort) * 100;
+                PoolEffort.value = Number(poolEffort) * 100;
                 }
                 // Kaspa (family)
             } else if (family == "kaspa") {
-                PoolEffort = Number(poolEffort) * Math.pow(2, 31) * 100;
+                PoolEffort.value = Number(poolEffort) * Math.pow(2, 31) * 100;
             } else {
-                PoolEffort = Number(poolEffort) * 100;
+                PoolEffort.value = Number(poolEffort) * 100;
             }
            
             var effortClass = "";
-            if (PoolEffort >= 500) {
+            if (PoolEffort.value >= 500) {
                 effortClass = "effort4";
-            } else if (PoolEffort >= 300) {
+            } else if (PoolEffort.value >= 300) {
                 effortClass = "effort3";
-            } else if (PoolEffort >= 200) {
+            } else if (PoolEffort.value >= 200) {
                 effortClass = "effort2";
-            } else if (PoolEffort >= 100) {
+            } else if (PoolEffort.value >= 100) {
                 effortClass = "effort1";
             }
             else {
                 effortClass = "effort0";
             }
             console.log('PoolEffort value', PoolEffort)
-            return PoolEffort
+            return PoolEffort.value
             
         }
           return{
@@ -261,12 +280,15 @@
             updateData,
             pools,
             blocks,
+            newBlocks,
             coinPrice,
             filterPending,
+            filterPendingBlock,
             id,
             PoolEffort,
             formatHashrate,
             getBlocks,
+            getNewBlocks,
             setPrice,
             renderTimeAgoBox,
             getTimeAgoAdmin,
